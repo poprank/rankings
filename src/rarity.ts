@@ -85,9 +85,12 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
 
     let maxTraitsNum = -1;
     nfts.forEach(nft => {
-        // there will always be a 'Trait Count' trait
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const traitCountTrait = nft.traits.find(t=>t.category === 'Meta' && t.value === TRAIT_COUNT)!;
+        const traitCountTrait = nft.traits.find(t=>t.category === 'Meta' && t.typeValue === TRAIT_COUNT);
+        // there must always be a 'Trait Count' trait
+        if (!traitCountTrait){
+            throw new Error("Each NFT must have a trait count with a 'Meta' category and TRAIT_COUNT value");
+        }
         maxTraitsNum = Math.max(maxTraitsNum, +traitCountTrait.value);
     });
 
