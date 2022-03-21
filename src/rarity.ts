@@ -194,4 +194,3 @@ export const calcMetaTraits = ( nftTraits: TraitBase[], collection: string): Tra
 
     return metaTraits;
 };
-

@@ -29,6 +29,7 @@
     "@typescript-eslint/no-loop-func": "off",
     "no-multiple-empty-lines":["error",{"max":2}],
     "@typescript-eslint/type-annotation-spacing":"error",
-    "react/jsx-filename-extension":"off"
+    "react/jsx-filename-extension":"off",
+    "eol-last":[1, "unix"]
   }
 }
