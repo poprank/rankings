@@ -115,12 +115,13 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
 
             // The trait is either the nft's trait w/ this type, or this type's "none"
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const trait = traitValuesOfThisType.find(t => t.typeValue === traitType) ?? traitValuesOfThisType.find(t => t.category === 'None')!;
+            const trait = nft.traits.find(t => t.typeValue === traitType) ?? traitValuesOfThisType.find(t => t.category === 'None')!;
+
+            const { value, typeValue } = trait;
+            const currTraitValueCount = traitValuesOfThisType.find(t=>t.value === value)!.traitCount;
 
             // Temporarily disable this ahead of reworking our trait calculation
             if (trait.category === 'None') return;
-            const { value, typeValue } = trait;
-            const currTraitValueCount = trait.traitCount;
             const collectionTraitValueCountPairs = collectionTraitsNoRarity[typeValue];
 
 
