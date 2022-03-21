@@ -8,7 +8,7 @@ export const NONE_TRAIT = 'None';
 
 // filters
 export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBase[], outTraits: TraitBase[]) => void>[] = [
-    { 'creatureworld':(nftTraits: TraitBase[], outTraits: TraitBase[])=>{
+    { 'creatureworld': (nftTraits: TraitBase[], outTraits: TraitBase[])=>{
         const bg = nftTraits.find(t => t.typeValue === 'Background');
         const creature = nftTraits.find(t => t.typeValue === 'Creature');
         if (bg && creature) {
@@ -23,7 +23,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
             }
         }
     } },
-    { 'deathbats-club':(nftTraits: TraitBase[], outTraits: TraitBase[])=>{
+    { 'deathbats-club': (nftTraits: TraitBase[], outTraits: TraitBase[])=>{
         nftTraits.forEach(trait => {
             const tType = trait.typeValue;
             if (['Brooks Wackerman', 'Johnny Christ', 'M. Shadows', 'Synyster Gates', 'Zacky Vengence', 'Zacky Vengeance', 'Shadows'].includes(tType) && !Object.keys(outTraits).includes('1 of 1')) {
@@ -36,7 +36,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
             }
         });
     } },
-    { 'mutant-ape-yacht-club':(nftTraits: TraitBase[], outTraits: TraitBase[])=>{
+    { 'mutant-ape-yacht-club': (nftTraits: TraitBase[], outTraits: TraitBase[])=>{
         const firstTrait = nftTraits[0].value;
         const baseTrait = {
             typeValue: 'Mutant Type',

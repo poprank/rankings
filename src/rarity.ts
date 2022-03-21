@@ -133,11 +133,11 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
 
             rarityTraitSum += currTraitSum;
 
-            nftTraitsWithRarity.push({ ...trait, traitCount:1, rarityTraitSum:currTraitSum });
+            nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: currTraitSum });
         },
         );
 
-        nftsWithRarity.push({ ...nft, traits:nftTraitsWithRarity, rarityTraitSum });
+        nftsWithRarity.push({ ...nft, traits: nftTraitsWithRarity, rarityTraitSum });
     });
 
     // Get all the array of all the NFTs' rarities, which after sorting we can use to find an NFT's rank
