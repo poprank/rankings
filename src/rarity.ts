@@ -40,8 +40,8 @@ const pushTraitToCollectionTraits = (collectionTraits: Record<string, TraitPreDb
 const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]>=>{
     const collectionTraitsNoRarity: Record<string, TraitPreDb[]> = {};
     nfts.forEach(nft=>{
-        nft.traits.forEach(n => {
-            pushTraitToCollectionTraits(collectionTraitsNoRarity, n);
+        nft.traits.forEach(t => {
+            pushTraitToCollectionTraits(collectionTraitsNoRarity, t);
         });
     });
 
@@ -116,10 +116,12 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
             // The trait is either the nft's trait w/ this type, or this type's "none"
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const trait = traitValuesOfThisType.find(t => t.typeValue === traitType) ?? traitValuesOfThisType.find(t => t.category === 'None')!;
-            if (trait.value === 'none') return;
-            const currTraitValue = trait.value;
+
+            // Temporarily disable this ahead of reworking our trait calculation
+            if (trait.category === 'None') return;
+            const { value, typeValue } = trait;
             const currTraitValueCount = trait.traitCount;
-            const collectionTraitValueCountPairs = collectionTraitsNoRarity[trait.typeValue];
+            const collectionTraitValueCountPairs = collectionTraitsNoRarity[typeValue];
 
 
             const traitTypeCount = collectionTraitValueCountPairs.length;
@@ -128,15 +130,19 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
 
 
             let currTraitSum = 0;
-            if (trait.typeValue === TRAIT_COUNT) {
+            if (typeValue === TRAIT_COUNT) {
                 currTraitSum = currTraitRarity * (maxTraitsNum - nft.traits.length);
             } else if (trait.category !== 'Meta') {
                 currTraitSum = currTraitRarity;
             }
 
             currTraitSum = +currTraitSum.toFixed(3);
-            if (!collectionTraits[trait.typeValue].find(t => t.value === currTraitValue))
-                collectionTraits[trait.typeValue].push(({ ...trait, traitCount: currTraitValueCount, rarityTraitSum: currTraitSum }));
+
+            if (!collectionTraits[typeValue])
+                collectionTraits[typeValue] = [];
+
+            if (!collectionTraits[typeValue].find(t => t.value === value))
+                collectionTraits[typeValue].push(({ ...trait, traitCount: currTraitValueCount, rarityTraitSum: currTraitSum }));
 
             rarityTraitSum += currTraitSum;
 
