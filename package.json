@@ -2,6 +2,10 @@
     "name": "@poprank/rankings",
     "version": "1.0.0",
     "description": "",
+    "publishConfig": {
+      "access": "public",
+      "registry": "https://registry.npmjs.org/"
+    },
     "main": "lib/index.js",
     "files":[ "lib" ],
     "types": "lib/index.d.ts",
