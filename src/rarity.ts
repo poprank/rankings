@@ -177,10 +177,21 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
  * around our "matches" meta trait
  * @param nftTraits
  * @param collection
+ * @param addMeta whether to add all non Trait Count meta traits. Trait Count is always added
  * @returns
  */
-export const calcMetaTraits = ( nftTraits: TraitBase[], collection: string): TraitBase[]=>{
+export const calcMetaTraits = ( nftTraits: TraitBase[], collection: string, addMeta?: boolean): TraitBase[]=>{
     const metaTraits: TraitBase[] = [];
+
+    // Add the trait count
+    metaTraits.push({
+        typeValue: TRAIT_COUNT,
+        value: `${nftTraits.filter(t=>t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length}`,
+        category: 'Meta',
+        displayType: null,
+    });
+
+    if (!addMeta) return metaTraits;
 
     // Call all the functions that calculate meta traits for this collection
     collectionNameMetaFunctionPairs.forEach(colMetaFuncPair=>{
@@ -191,8 +202,8 @@ export const calcMetaTraits = ( nftTraits: TraitBase[], collection: string): Tra
 
     const traitValueMatches = getNftTraitsMatches(nftTraits, collection);
 
-    // Calculate our "Matches" meta trait
 
+    // Calculate our "Matches" meta trait
     Object.keys(traitValueMatches).forEach(val => {
         const numMatches = traitValueMatches[val];
 
