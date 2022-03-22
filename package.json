@@ -1,7 +1,7 @@
 {
     "name": "@poprank/rankings",
-    "version": "1.1.0",
-    "description": "",
+    "version": "1.1.1",
+    "description": "PopRank's NFT rarity and aesthetics ranking logic",
     "publishConfig": {
       "access": "public",
       "registry": "https://registry.npmjs.org/"

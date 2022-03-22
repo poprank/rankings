@@ -1,8 +1,7 @@
 # Rankings
 
-Hey, will fill this out a bit more ahead of our article release
+This package holds PopRank's NFT rankings logic. Curious as to how we calculate our rarity and aesthetics scores? Well, we believe it should be transparent, so it's all laid out publicly here!
 
-## Testing locally
+For a more hands-on example which involves pulling NFTs from OpenSea via their API and then calculating their rarity, check out the example in our [@poprank/opensea package](https://www.npmjs.com/package/@poprank/opensea)
 
-`yarn build`, then `yarn pack`, then take that `.tgz` and have that as the "version" in the package.json of the consumer
 
