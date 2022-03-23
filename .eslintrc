@@ -1,7 +1,7 @@
 {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.eslint.json"
   },
   "env": {
     "browser": true,
@@ -29,10 +29,18 @@
       4
     ],
     "@typescript-eslint/no-loop-func": "off",
-    "no-multiple-empty-lines":["error",{"max":2}],
-    "@typescript-eslint/type-annotation-spacing":"error",
-    "react/jsx-filename-extension":"off",
-    "eol-last":[1, "unix"],
-    "key-spacing":"error"
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 2
+      }
+    ],
+    "@typescript-eslint/type-annotation-spacing": "error",
+    "react/jsx-filename-extension": "off",
+    "eol-last": [
+      1,
+      "unix"
+    ],
+    "key-spacing": "error"
   }
 }

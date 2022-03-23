@@ -34,7 +34,7 @@ const newRating = (actual: number, expected: number, rating: number, roundsPlaye
     const normRating = Math.round((rating + kFactorStatic * (actual - expected)));
 
     return useDecayingKFactor ? scaledRating : normRating
-    ;
+        ;
 };
 
 /**

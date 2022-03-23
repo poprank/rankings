@@ -8,7 +8,7 @@ export interface TraitBase {
     displayType: DisplayType;
 }
 
-export interface TraitPreDb extends TraitBase{
+export interface TraitPreDb extends TraitBase {
     rarityTraitSum: number;
     traitCount: number;
 }
@@ -33,11 +33,11 @@ export interface NftInit {
     traits: TraitBase[];
 }
 
-export interface NftWithRatedTraits extends NftInit{
-    traits: TraitPreDb[]
+export interface NftWithRatedTraits extends NftInit {
+    traits: TraitPreDb[];
     rarityTraitSum: number;
 }
 
-export interface NftWithRank extends NftWithRatedTraits{
+export interface NftWithRank extends NftWithRatedTraits {
     rarityTraitSumRank: number;
 }

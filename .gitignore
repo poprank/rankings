@@ -2,5 +2,7 @@ node_modules/
 dist/
 lib/
 
+.DS_Store
+
 # Ignore `yarn pack` output
 *.tgz

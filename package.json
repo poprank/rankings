@@ -1,30 +1,39 @@
 {
-    "name": "@poprank/rankings",
-    "version": "1.1.1",
-    "description": "PopRank's NFT rarity and aesthetics ranking logic",
-    "publishConfig": {
-      "access": "public",
-      "registry": "https://registry.npmjs.org/"
-    },
-    "main": "lib/index.js",
-    "files":[ "lib" ],
-    "types": "lib/index.d.ts",
-    "dependencies": {},
-    "devDependencies": {
-      "@typescript-eslint/eslint-plugin": "^5.13.0",
-      "@typescript-eslint/parser": "^5.13.0",
-      "eslint": "^8.10.0",
-      "eslint-config-airbnb-typescript": "^16.1.0",
-      "typescript": "~4.5.2"
-    },
-    "scripts": {
-      "build": "yarn tsc",
-      "lint": "eslint . --ext .ts"
-    },
-    "keywords": [],
-    "author": {
-      "email": "info@poprank.io",
-      "name": "PopRank",
-      "url": "https://poprank.io"
-    }
+  "name": "@poprank/rankings",
+  "version": "1.1.2",
+  "description": "PopRank's NFT rarity and aesthetics ranking logic",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "types": "lib/index.d.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb-typescript": "^16.1.0",
+    "jest": "^27.5.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.1.0",
+    "typescript": "~4.5.2"
+  },
+  "scripts": {
+    "test": "jest",
+    "clean": "rimraf ./lib",
+    "build": "rimraf ./lib && yarn tsc",
+    "lint": "eslint . --ext .ts"
+  },
+  "keywords": [],
+  "author": {
+    "email": "info@poprank.io",
+    "name": "PopRank",
+    "url": "https://poprank.io"
   }
+}

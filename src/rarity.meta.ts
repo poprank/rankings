@@ -8,67 +8,73 @@ export const NONE_TRAIT = 'None';
 
 // filters
 export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBase[], outTraits: TraitBase[]) => void>[] = [
-    { 'creatureworld': (nftTraits: TraitBase[], outTraits: TraitBase[])=>{
-        const bg = nftTraits.find(t => t.typeValue === 'Background');
-        const creature = nftTraits.find(t => t.typeValue === 'Creature');
-        if (bg && creature) {
-            if (bg.value === creature.value) {
-                // Add trait count
+    {
+        'creatureworld': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
+            const bg = nftTraits.find(t => t.typeValue === 'Background');
+            const creature = nftTraits.find(t => t.typeValue === 'Creature');
+            if (bg && creature) {
+                if (bg.value === creature.value) {
+                    // Add trait count
+                    outTraits.push({
+                        typeValue: 'Creature Background Match',
+                        value: 'true',
+                        category: 'Meta',
+                        displayType: null,
+                    });
+                }
+            }
+        }
+    },
+    {
+        'deathbats-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
+            nftTraits.forEach(trait => {
+                const tType = trait.typeValue;
+                if (['Brooks Wackerman', 'Johnny Christ', 'M. Shadows', 'Synyster Gates', 'Zacky Vengence', 'Zacky Vengeance', 'Shadows'].includes(tType) && !Object.keys(outTraits).includes('1 of 1')) {
+                    outTraits.push({
+                        typeValue: '1 of 1',
+                        value: tType,
+                        category: 'Meta',
+                        displayType: null,
+                    });
+                }
+            });
+        }
+    },
+    {
+        'mutant-ape-yacht-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
+            const firstTrait = nftTraits[0].value;
+            const baseTrait = {
+                typeValue: 'Mutant Type',
+                id: '',
+                rarityTraitSum: 0,
+                traitCount: 0,
+                category: 'Meta' as TraitCategory,
+                displayType: null,
+            };
+
+            if (firstTrait.includes('M1')) {
                 outTraits.push({
-                    typeValue: 'Creature Background Match',
-                    value: 'true',
-                    category: 'Meta',
-                    displayType: null,
+                    ...baseTrait,
+                    value: 'M1',
+
+                });
+            } else if (firstTrait.includes('M2')) {
+                outTraits.push({
+                    ...baseTrait,
+                    value: 'M2',
+                });
+            } else {
+                outTraits.push({
+                    ...baseTrait,
+                    value: 'M3',
                 });
             }
         }
-    } },
-    { 'deathbats-club': (nftTraits: TraitBase[], outTraits: TraitBase[])=>{
-        nftTraits.forEach(trait => {
-            const tType = trait.typeValue;
-            if (['Brooks Wackerman', 'Johnny Christ', 'M. Shadows', 'Synyster Gates', 'Zacky Vengence', 'Zacky Vengeance', 'Shadows'].includes(tType) && !Object.keys(outTraits).includes('1 of 1')) {
-                outTraits.push({
-                    typeValue: '1 of 1',
-                    value: tType,
-                    category: 'Meta',
-                    displayType: null,
-                });
-            }
-        });
-    } },
-    { 'mutant-ape-yacht-club': (nftTraits: TraitBase[], outTraits: TraitBase[])=>{
-        const firstTrait = nftTraits[0].value;
-        const baseTrait = {
-            typeValue: 'Mutant Type',
-            id: '',
-            rarityTraitSum: 0,
-            traitCount: 0,
-            category: 'Meta' as TraitCategory,
-            displayType: null,
-        };
-
-        if (firstTrait.includes('M1')) {
-            outTraits.push({
-                ...baseTrait,
-                value: 'M1',
-
-            });
-        } else if (firstTrait.includes('M2')) {
-            outTraits.push({
-                ...baseTrait,
-                value: 'M2',
-            });
-        } else {
-            outTraits.push({
-                ...baseTrait,
-                value: 'M3',
-            });
-        }
-    } },
+    },
 ];
 
 
-export const getNftTraitsMatches = (nftTraits: TraitBase[], collection: string): Record<string, number> =>{
+export const getNftTraitsMatches = (nftTraits: TraitBase[], collection: string): Record<string, number> => {
     const traitValueMatches: Record<string, number> = {};
     nftTraits.forEach((n: TraitBase) => {
         let scrubbedValue = n.value;
