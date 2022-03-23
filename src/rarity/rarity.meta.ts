@@ -5,8 +5,8 @@ export const NONE_TRAIT = 'None';
 
 /**
  * All the manual functions we use to add special "meta" traits to collections.
- * These meta traits don't affect rarity at all, they just make for more meaningful
- * trait filters on the frontend
+ * These meta traits don't affect rarity at all; they just make for more meaningful
+ * trait filters on the frontend.
  */
 export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBase[], outTraits: TraitBase[]) => void>[] = [{
     'creatureworld': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
@@ -24,8 +24,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
             }
         }
     },
-},
-{
+}, {
     'deathbats-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
         nftTraits.forEach(trait => {
             const tType = trait.typeValue;
@@ -39,8 +38,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
             }
         });
     },
-},
-{
+}, {
     'mutant-ape-yacht-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
         const firstTrait = nftTraits[0].value;
         const baseTrait = {

@@ -199,16 +199,15 @@ export const addAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
  * @returns
  */
 export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMeta?: boolean): TraitBase[] => {
-    const metaTraits: TraitBase[] = [];
-
-    // Add the trait count
-    metaTraits.push({
+    // Initialize meta traits
+    const metaTraits: TraitBase[] = [{
         typeValue: TRAIT_COUNT,
         value: `${nftTraits.filter(t => t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length}`,
         category: 'Meta',
         displayType: null,
-    });
+    }];
 
+    // Return early if no more meta traits are requested
     if (!addMeta) return metaTraits;
 
     // Call all the functions that calculate meta traits for this collection
