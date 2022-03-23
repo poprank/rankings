@@ -11,7 +11,7 @@ import { collectionNameMetaFunctionPairs, getNftTraitsMatches, NONE_TRAIT, TRAIT
 const getBaseTraitScore = (traitCount: number, collectionSize: number, numValuesForThisType: number) => (collectionSize / numValuesForThisType) * (1 / traitCount);
 
 /**
- * Calculate a trait's rarity score, with the following formula:
+ * Calculate an individual trait's rarity score
  *
  * @param traitCount
  * @param collectionSize
