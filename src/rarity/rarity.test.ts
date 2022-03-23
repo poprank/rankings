@@ -1,14 +1,14 @@
 import fs from 'fs';
 import { NftInit } from '../types';
-import { calculateAllNftsRarity } from './rarity';
+import { addAllNftsRarity } from './rarity';
 
-describe('calculateRarity', () => {
+describe('addAllNftsRarity', () => {
     test('min rarity is close to 1', () => {
         const data = fs.readFileSync('./src/rarity/boredapeyachtclub.test.json', { encoding: 'utf8', flag: 'r' });
         const nfts: NftInit[] = JSON.parse(data);
 
         // console.log(nfts[0]);
-        const { nftsWithRarityAndRank, collectionTraits } = calculateAllNftsRarity(nfts);
+        const { nftsWithRarityAndRank, collectionTraits } = addAllNftsRarity(nfts);
 
         let minRarityScore = Infinity;
 
