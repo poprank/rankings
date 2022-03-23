@@ -11,7 +11,11 @@ import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from 
 const getNonWeightTraitScoreComponent = (traitCount: number, collectionSize: number, numValuesForThisType: number) => (collectionSize / numValuesForThisType) * (1 / traitCount);
 
 /**
- * Calculate a trait's trait score
+ * Calculate a trait's rarity score, with the following formula:
+ *                                 collectionSize                    1
+ * traitScore = weight x   ----------------------------- x ----------------------
+ *                          uniqueTraitValuesOfThisType     numNftsWithThisValue
+ *
  * @param traitCount
  * @param collectionSize
  * @param numValuesForThisType
