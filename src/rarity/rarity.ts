@@ -12,9 +12,6 @@ const getBaseTraitScore = (traitCount: number, collectionSize: number, numValues
 
 /**
  * Calculate a trait's rarity score, with the following formula:
- *                                 collectionSize                    1
- * traitScore = weight x   ----------------------------- x ----------------------
- *                          uniqueTraitValuesOfThisType     numNftsWithThisValue
  *
  * @param traitCount
  * @param collectionSize
