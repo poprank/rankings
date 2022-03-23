@@ -1,5 +1,5 @@
+import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from '../types';
 import { collectionNameMetaFunctionPairs, getNftTraitsMatches, NONE_TRAIT, TRAIT_COUNT } from './rarity.meta';
-import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from './types';
 
 /**
  * Gets the component of the trait score that isn't the weight
@@ -8,7 +8,7 @@ import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from 
  * @param numValuesForThisType
  * @returns
  */
-const getNonWeightTraitScoreComponent = (traitCount: number, collectionSize: number, numValuesForThisType: number) => (collectionSize / numValuesForThisType) * (1 / traitCount);
+const getBaseTraitScore = (traitCount: number, collectionSize: number, numValuesForThisType: number) => (collectionSize / numValuesForThisType) * (1 / traitCount);
 
 /**
  * Calculate a trait's rarity score, with the following formula:
@@ -22,8 +22,8 @@ const getNonWeightTraitScoreComponent = (traitCount: number, collectionSize: num
  * @param traitWeight
  * @returns
  */
-export const getTraitScore = (traitCount: number, collectionSize: number, numValuesForThisType: number, traitWeight: number): number =>
-    +(traitWeight * getNonWeightTraitScoreComponent(traitCount, collectionSize, numValuesForThisType)).toFixed(3);
+export const getTraitScore = (traitCount: number, collectionSize: number, numValuesForThisType: number, traitWeight: number) =>
+    +(traitWeight * getBaseTraitScore(traitCount, collectionSize, numValuesForThisType)).toFixed(3);
 
 /**
  * Push a trait to the all-up collection's traits obj
@@ -88,7 +88,7 @@ const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]> => {
  * @param collectionTraits
  * @param collectionSize
  */
-const getCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]>, collectionSize: number): number => {
+const getCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]>, collectionSize: number) => {
     let minNonWeightComponent = Infinity;
 
     Object.values(collectionTraits).forEach(traitTypeArray => {
@@ -97,7 +97,7 @@ const getCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]
             if (trait.category === 'Meta' && trait.typeValue !== TRAIT_COUNT)
                 return;
 
-            minNonWeightComponent = Math.min(minNonWeightComponent, getNonWeightTraitScoreComponent(trait.traitCount, collectionSize, traitTypeArray.length));
+            minNonWeightComponent = Math.min(minNonWeightComponent, getBaseTraitScore(trait.traitCount, collectionSize, traitTypeArray.length));
         });
     });
 

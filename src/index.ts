@@ -1,5 +1,5 @@
 export * from './aesthetics';
-export * from './rarity';
-export * from './rarity.meta';
+export * from './rarity/rarity';
+export * from './rarity/rarity.meta';
 export * from './types';
 

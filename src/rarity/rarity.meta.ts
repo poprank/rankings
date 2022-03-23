@@ -1,7 +1,7 @@
 // All the manual functions we use to add special "meta" traits to collections.
 // These meta traits don't affect rarity at all, they just make for more meaningful
 
-import { TraitBase, TraitCategory } from './types';
+import { TraitBase, TraitCategory } from '../types';
 
 export const TRAIT_COUNT = 'Trait Count';
 export const NONE_TRAIT = 'None';
@@ -23,7 +23,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
                     });
                 }
             }
-        }
+        },
     },
     {
         'deathbats-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
@@ -38,7 +38,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
                     });
                 }
             });
-        }
+        },
     },
     {
         'mutant-ape-yacht-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
@@ -69,7 +69,7 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
                     value: 'M3',
                 });
             }
-        }
+        },
     },
 ];
 

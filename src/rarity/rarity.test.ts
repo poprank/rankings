@@ -1,10 +1,10 @@
 import fs from 'fs';
+import { NftInit } from '../types';
 import { calculateRarity } from './rarity';
-import { NftInit } from './types';
 
 describe('calculateRarity', () => {
     test('min rarity is close to 1', () => {
-        const data = fs.readFileSync('./test/boredapeyachtclub.json', { encoding: 'utf8', flag: 'r' });
+        const data = fs.readFileSync('./boredapeyachtclub.test.json', { encoding: 'utf8', flag: 'r' });
         const nfts: NftInit[] = JSON.parse(data);
 
         // console.log(nfts[0]);
