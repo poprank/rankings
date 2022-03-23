@@ -6,6 +6,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "license": "MIT",
   "main": "lib/index.js",
   "files": [
     "lib"
