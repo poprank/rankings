@@ -15,7 +15,7 @@ const saveAndCalculateRarity = async () => {
     const nftsWithRarityAndRank = exampleCalculateRarityOfAllNfts();
     const jsonString = JSON.stringify(nftsWithRarityAndRank);
 
-    fs.writeFile('./boredapeyachtclub-rankings.json', jsonString, err => {
+    fs.writeFile('./collection-rankings.json', jsonString, err => {
         if (err) {
             console.log('Error writing file', err);
         }
@@ -61,7 +61,7 @@ const saveAndCalculateRarity = async () => {
         </div>
     </body>`;
 
-    fs.writeFile('./boredapeyachtclub-example.html', htmlStr, err => {
+    fs.writeFile('./collection-example.html', htmlStr, err => {
         if (err) {
             console.log('Error writing file', err);
         }
