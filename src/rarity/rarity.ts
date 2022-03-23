@@ -12,7 +12,6 @@ const calculateBaseTraitScore = (traitCount: number, collectionSize: number, num
 
 /**
  * Calculate an individual trait's rarity score
- *
  * @param traitCount
  * @param collectionSize
  * @param numValuesForThisType
