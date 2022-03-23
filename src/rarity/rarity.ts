@@ -2,7 +2,7 @@ import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from 
 import { collectionNameMetaFunctionPairs, getNftTraitsMatches, NONE_TRAIT, TRAIT_COUNT } from './rarity.meta';
 
 /**
- * Gets the component of the trait score that isn't the weight
+ * Gets the component of the trait score that isn't the weight.
  * @param traitCount
  * @param collectionSize
  * @param numValuesForThisType
@@ -11,7 +11,7 @@ import { collectionNameMetaFunctionPairs, getNftTraitsMatches, NONE_TRAIT, TRAIT
 const calculateBaseTraitScore = (traitCount: number, collectionSize: number, numValuesForThisType: number) => (collectionSize / numValuesForThisType) * (1 / traitCount);
 
 /**
- * Calculate an individual trait's rarity score
+ * Calculate an individual trait's rarity score.
  * @param traitCount
  * @param collectionSize
  * @param numValuesForThisType
@@ -22,7 +22,7 @@ export const calculateTraitScore = (traitCount: number, collectionSize: number, 
     +(traitWeight * calculateBaseTraitScore(traitCount, collectionSize, numValuesForThisType)).toFixed(3);
 
 /**
- * Push a trait to the all-up collection's traits obj
+ * Push a trait to the all-up collection's traits obj.
  * @param collectionTraits Object of key:value pairs of `trait type: array of trait values of this type`
  * eg: `head:[{typeValue:'head',value:'crown'}...]
  * @param trait The trait to push
@@ -80,7 +80,7 @@ const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]> => {
  * We calculate a value such that the lowest individual trait's rarity score is 1.
  *
  * NOTE: This weighting is arbitrary, but as it's the same weighting we're using for every trait in the collection,
- * the value won't affect the rankings at all
+ * the value won't affect the rankings at all.
  * @param collectionTraits
  * @param collectionSize
  */
@@ -102,7 +102,7 @@ const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitP
 
 /**
  * Calculates the rarity for each trait, their rankings, and the all-up
- * collection's traits
+ * collection's traits.
  * @param nfts Nfts with unranked, unrated traits
  * @returns Nfts with their rank and with rated traits, and the all-up
  */
@@ -192,7 +192,7 @@ export const addAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
 
 /**
  * Calculate the meta traits for an NFT within a collection. There will be a lot of collection-specific logic in here
- * around our "matches" meta trait
+ * around our "matches" meta trait.
  * @param nftTraits
  * @param collection
  * @param addMeta whether to add all non Trait Count meta traits. Trait Count is always added
