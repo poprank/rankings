@@ -27,7 +27,8 @@
   "scripts": {
     "test": "jest",
     "clean": "rimraf ./lib",
-    "build": "rimraf ./lib && yarn tsc",
+    "build": "yarn clean && yarn tsc",
+    "ci": "yarn tsc",
     "lint": "eslint . --ext .ts"
   },
   "keywords": [],
