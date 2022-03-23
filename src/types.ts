@@ -17,7 +17,6 @@ export interface Trait extends TraitPreDb {
     minPrice?: number;
 }
 
-
 // THESE TYPES I'LL RENAME ONCE THEYRE IN THEIR OWN PACKAGE
 export interface NftInit {
     collection: string;

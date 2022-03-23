@@ -107,7 +107,7 @@ const getCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]
  * @param nfts Nfts with unranked, unrated traits
  * @returns Nfts with their rank and with rated traits, and the all-up
  */
-export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitPreDb[]>; } => {
+export const calculateAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitPreDb[]>; } => {
     const nftsWithRarity: NftWithRatedTraits[] = [];
 
     const collectionTraitsNoRarity = getCollectionTraits(nfts);
@@ -155,7 +155,6 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
 
             const collectionTraitValueCountPairs = collectionTraitsNoRarity[typeValue];
 
-
             const traitTypeCount = collectionTraitValueCountPairs.length;
             const currTraitRarity = getTraitScore(
                 currTraitValueCount, nfts.length, traitTypeCount, weight);
@@ -192,7 +191,6 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
     return { nftsWithRarityAndRank, collectionTraits };
 };
 
-
 /**
  * Calculate the meta traits for an NFT within a collection. There will be a lot of collection-specific logic in here
  * around our "matches" meta trait
@@ -201,7 +199,7 @@ export const calculateRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWi
  * @param addMeta whether to add all non Trait Count meta traits. Trait Count is always added
  * @returns
  */
-export const calcMetaTraits = (nftTraits: TraitBase[], collection: string, addMeta?: boolean): TraitBase[] => {
+export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMeta?: boolean): TraitBase[] => {
     const metaTraits: TraitBase[] = [];
 
     // Add the trait count
@@ -222,7 +220,6 @@ export const calcMetaTraits = (nftTraits: TraitBase[], collection: string, addMe
     });
 
     const traitValueMatches = getNftTraitsMatches(nftTraits, collection);
-
 
     // Calculate our "Matches" meta trait
     Object.keys(traitValueMatches).forEach(val => {

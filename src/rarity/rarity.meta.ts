@@ -73,7 +73,6 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
     },
 ];
 
-
 export const getNftTraitsMatches = (nftTraits: TraitBase[], collection: string): Record<string, number> => {
     const traitValueMatches: Record<string, number> = {};
     nftTraits.forEach((n: TraitBase) => {
