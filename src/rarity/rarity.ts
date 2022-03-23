@@ -199,7 +199,7 @@ export const addAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
  * @returns
  */
 export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMeta?: boolean): TraitBase[] => {
-    // Initialize meta traits
+    // Initialize meta traits with the "Trait Count" trait
     const metaTraits: TraitBase[] = [{
         typeValue: TRAIT_COUNT,
         value: `${nftTraits.filter(t => t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length}`,
@@ -210,16 +210,13 @@ export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMet
     // Return early if no more meta traits are requested
     if (!addMeta) return metaTraits;
 
-    // Call all the functions that calculate meta traits for this collection
-    collectionNameMetaFunctionPairs.forEach(colMetaFuncPair => {
-        if (Object.keys(colMetaFuncPair)[0] === collection) {
-            colMetaFuncPair[collection](nftTraits, metaTraits);
-        }
-    });
-
-    const traitValueMatches = getNftTraitsMatches(nftTraits, collection);
+    // Call this collection's meta trait function, if it exists
+    const collectionMetaFunctionPair = collectionNameMetaFunctionPairs.find(
+        collectionFunctionPair => Object.keys(collectionFunctionPair)[0] === collection);
+    if (collectionMetaFunctionPair) collectionMetaFunctionPair[collection](nftTraits, metaTraits);
 
     // Calculate our "Matches" meta trait
+    const traitValueMatches = getNftTraitsMatches(nftTraits, collection);
     Object.keys(traitValueMatches).forEach(val => {
         const numMatches = traitValueMatches[val];
 
