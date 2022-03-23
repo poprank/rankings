@@ -61,10 +61,9 @@ const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]> => {
     // will go from [["Galaxy Figher",1]] -> [["Galaxy Figher",1], ["none",9999]]
     nfts.forEach(n => {
         Object.keys(collectionTraitsNoRarity).forEach(traitType => {
-            const category = collectionTraitsNoRarity[traitType][0].category;
-            // If this NFT doesn't have a trait of type `traitType`, and this isn't a "Meta" trait,
+            // If this NFT doesn't have a trait of type `traitType`
             // Add to the collection-wide "None" trait type's count
-            if (!n.traits.find(t => t.typeValue === traitType) && category !== 'Meta') {
+            if (!n.traits.find(t => t.typeValue === traitType)) {
                 pushTraitToCollectionTraits(collectionTraitsNoRarity, {
                     typeValue: traitType, value: NONE_TRAIT, category: 'None', displayType: null,
                 });
@@ -73,121 +72,6 @@ const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]> => {
     });
 
     return collectionTraitsNoRarity;
-};
-
-/**
- * Calculate the "weight" (constant by which we multiply every trait's score) for the collection.
- * We calculate a value such that the lowest individual trait's rarity score is 1.
- *
- * NOTE: This weighting is arbitrary, but as it's the same weighting we're using for every trait in the collection,
- * the value won't affect the rankings at all.
- * @param collectionTraits
- * @param collectionSize
- */
-const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]>, collectionSize: number) => {
-    let minNonWeightComponent = Infinity;
-
-    Object.values(collectionTraits).forEach(traitTypeArray => {
-        traitTypeArray.forEach(trait => {
-            // Ignore all non trait count "meta" traits
-            if (trait.category === 'Meta' && trait.typeValue !== TRAIT_COUNT)
-                return;
-
-            minNonWeightComponent = Math.min(minNonWeightComponent, calculateBaseTraitScore(trait.traitCount, collectionSize, traitTypeArray.length));
-        });
-    });
-
-    return 1 / minNonWeightComponent;
-};
-
-/**
- * Calculates the rarity for each trait, their rankings, and the all-up
- * collection's traits.
- * @param nfts Nfts with unranked, unrated traits
- * @returns Nfts with their rank and with rated traits, and the all-up
- */
-export const addAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitPreDb[]>; } => {
-    const nftsWithRarity: NftWithRatedTraits[] = [];
-
-    const collectionTraitsNoRarity = getCollectionTraits(nfts);
-    const collectionTraits: Record<string, TraitPreDb[]> = {};
-
-    // find the trait weighting for all traits' rarities in this collection
-    const weight = calculateCollectionRarityWeight(collectionTraitsNoRarity, nfts.length);
-
-    let maxTraitsNum = -1;
-    nfts.forEach(nft => {
-        let numTraits: number;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const traitCountTrait = nft.traits.find(t => t.category === 'Meta' && t.typeValue === TRAIT_COUNT);
-        // If we have a "Trait Count" trait, use that, otherwise naively filter out "none" and use the remaining
-        // traits' length
-        if (traitCountTrait) {
-            numTraits = +traitCountTrait.value;
-        } else {
-            numTraits = nft.traits.filter(t => t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length;
-        }
-        maxTraitsNum = Math.max(maxTraitsNum, numTraits);
-    });
-
-    // For each NFT, go through every trait it has / doesn't have, summing the rarity of each individual trait
-    // to produce the final `rarityTraitSum` for the NFT. At the same time, add the traits with their now-calculated
-    // rarity to our all up `collectionTraits` object.
-    nfts.forEach(nft => {
-        let rarityTraitSum = 0;
-        const nftTraitsWithRarity: TraitPreDb[] = [];
-
-        Object.keys(collectionTraitsNoRarity).forEach(traitType => {
-            const traitValuesOfThisType = collectionTraitsNoRarity[traitType];
-            if (traitValuesOfThisType.length === 0)
-                return;
-            const category = traitValuesOfThisType[0].category;
-            if (category === 'Meta' && traitType !== TRAIT_COUNT)
-                return;
-
-            // The trait is either the nft's trait w/ this type, or this type's "none"
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const trait = nft.traits.find(t => t.typeValue === traitType) ?? traitValuesOfThisType.find(t => t.category === 'None')!;
-
-            const { value, typeValue } = trait;
-            const currTraitValueCount = traitValuesOfThisType.find(t => t.value === value)!.traitCount;
-
-            const collectionTraitValueCountPairs = collectionTraitsNoRarity[typeValue];
-
-            const traitTypeCount = collectionTraitValueCountPairs.length;
-            const currTraitRarity = calculateTraitScore(
-                currTraitValueCount, nfts.length, traitTypeCount, weight);
-
-            if (!collectionTraits[typeValue])
-                collectionTraits[typeValue] = [];
-
-            if (!collectionTraits[typeValue].find(t => t.value === value))
-                collectionTraits[typeValue].push(({ ...trait, traitCount: currTraitValueCount, rarityTraitSum: currTraitRarity }));
-
-            rarityTraitSum += currTraitRarity;
-
-            nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: currTraitRarity });
-        },
-        );
-
-        nftsWithRarity.push({ ...nft, traits: nftTraitsWithRarity, rarityTraitSum });
-    });
-
-    // Get all the array of all the NFTs' rarities, which after sorting we can use to find an NFT's rank
-    const rarities = nftsWithRarity.map(nft => nft.rarityTraitSum);
-
-    // Sort rarities from highest to lowest
-    rarities.sort((a, b) => b - a);
-
-    // Now that we've calculated the rarity of each NFT, we can calculate each NFT's rank
-    const nftsWithRarityAndRank: NftWithRank[] = nftsWithRarity.map(n => ({
-        ...n,
-        // Below will also handle the case where two NFTs have the same
-        // rarity score
-        rarityTraitSumRank: rarities.indexOf(n.rarityTraitSum) + 1,
-    }));
-
-    return { nftsWithRarityAndRank, collectionTraits };
 };
 
 /**
@@ -231,4 +115,133 @@ export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMet
     });
 
     return metaTraits;
+};
+
+/**
+ * Calculate the "weight" (constant by which we multiply every trait's score) for the collection.
+ * We calculate a value such that the lowest individual trait's rarity score is 1.
+ *
+ * NOTE: This weighting is arbitrary, but as it's the same weighting we're using for every trait in the collection,
+ * the value won't affect the rankings at all.
+ * @param collectionTraits
+ * @param collectionSize
+ */
+const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]>, collectionSize: number) => {
+    let minNonWeightComponent = Infinity;
+
+    Object.values(collectionTraits).forEach(traitTypeArray => {
+        // If this is a meta trait that isn't trait count, don't count it
+        if (traitTypeArray.find(t => t.category === 'Meta' && t.typeValue !== TRAIT_COUNT))
+            return;
+        traitTypeArray.forEach(trait => {
+            // Ignore all non trait count "meta" traits
+            if (trait.category === 'Meta' && trait.typeValue !== TRAIT_COUNT)
+                return;
+
+            minNonWeightComponent = Math.min(minNonWeightComponent, calculateBaseTraitScore(trait.traitCount, collectionSize, traitTypeArray.length));
+        });
+    });
+
+    return 1 / minNonWeightComponent;
+};
+
+/**
+ * Calculates the rarity for each trait, their rankings, and the all-up
+ * collection's traits.
+ * @param nfts Nfts with unranked, unrated traits
+ * @returns Nfts with their rank and with rated traits, and the all-up
+ */
+export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitPreDb[]>; } => {
+
+    // Add all the base traits to the traits we'll add to the NFT, and calculate all "matches"
+    nfts.forEach(nft => {
+        nft.traits.push(...getMetaTraits(nft.traits, nft.collection, true));
+    });
+
+    const nftsWithRarity: NftWithRatedTraits[] = [];
+
+    const collectionTraitsNoRarity = getCollectionTraits(nfts);
+    const collectionTraits: Record<string, TraitPreDb[]> = {};
+
+    // find the trait weighting for all traits' rarities in this collection
+    const weight = calculateCollectionRarityWeight(collectionTraitsNoRarity, nfts.length);
+
+    let maxTraitsNum = -1;
+    nfts.forEach(nft => {
+        let numTraits: number;
+        const traitCountTrait = nft.traits.find(t => t.category === 'Meta' && t.typeValue === TRAIT_COUNT);
+        // If we have a "Trait Count" trait, use that, otherwise naively filter out "none" and use the remaining
+        // traits' length
+        if (traitCountTrait) {
+            numTraits = +traitCountTrait.value;
+        } else {
+            numTraits = nft.traits.filter(t => t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length;
+        }
+        maxTraitsNum = Math.max(maxTraitsNum, numTraits);
+    });
+
+    // For each NFT, go through every trait it has / doesn't have, summing the rarity of each individual trait
+    // to produce the final `rarityTraitSum` for the NFT. At the same time, add the traits with their now-calculated
+    // rarity to our all up `collectionTraits` object.
+    nfts.forEach(nft => {
+        let rarityTraitSum = 0;
+        const nftTraitsWithRarity: TraitPreDb[] = [];
+
+        Object.keys(collectionTraitsNoRarity).forEach(traitType => {
+            const traitValuesOfThisType = collectionTraitsNoRarity[traitType];
+            if (traitValuesOfThisType.length === 0)
+                return;
+
+            // The trait is either the nft's trait w/ this type, or this type's "none"
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const trait = nft.traits.find(t => t.typeValue === traitType) ?? traitValuesOfThisType.find(t => t.category === 'None')!;
+
+            // For all non trait-count meta traits, don't calculate the rarity. If it's not none though, still
+            // add it to the end traits array
+            if (traitValuesOfThisType.find(t => t.category === 'Meta' && t.typeValue !== TRAIT_COUNT)) {
+                if (trait.category !== 'None')
+                    nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: 0 });
+                return;
+
+            }
+
+            const { value, typeValue } = trait;
+            const currTraitValueCount = traitValuesOfThisType.find(t => t.value === value)!.traitCount;
+
+            const collectionTraitValueCountPairs = collectionTraitsNoRarity[typeValue];
+
+            const traitTypeCount = collectionTraitValueCountPairs.length;
+            const currTraitRarity = calculateTraitScore(
+                currTraitValueCount, nfts.length, traitTypeCount, weight);
+
+            if (!collectionTraits[typeValue])
+                collectionTraits[typeValue] = [];
+
+            if (!collectionTraits[typeValue].find(t => t.value === value))
+                collectionTraits[typeValue].push(({ ...trait, traitCount: currTraitValueCount, rarityTraitSum: currTraitRarity }));
+
+            rarityTraitSum += currTraitRarity;
+
+            nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: currTraitRarity });
+        },
+        );
+
+        nftsWithRarity.push({ ...nft, traits: nftTraitsWithRarity, rarityTraitSum: +rarityTraitSum.toFixed(3) });
+    });
+
+    // Get all the array of all the NFTs' rarities, which after sorting we can use to find an NFT's rank
+    const rarities = nftsWithRarity.map(nft => nft.rarityTraitSum);
+
+    // Sort rarities from highest to lowest
+    rarities.sort((a, b) => b - a);
+
+    // Now that we've calculated the rarity of each NFT, we can calculate each NFT's rank
+    const nftsWithRarityAndRank: NftWithRank[] = nftsWithRarity.map(n => ({
+        ...n,
+        // Below will also handle the case where two NFTs have the same
+        // rarity score
+        rarityTraitSumRank: rarities.indexOf(n.rarityTraitSum) + 1,
+    }));
+
+    return { nftsWithRarityAndRank, collectionTraits };
 };

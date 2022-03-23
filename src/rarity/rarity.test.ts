@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { NftInit } from '../types';
-import { addAllNftsRarity } from './rarity';
+import { getAllNftsRarity } from './rarity';
 
 describe('addAllNftsRarity', () => {
     test('min rarity is close to 1', () => {
@@ -8,7 +8,7 @@ describe('addAllNftsRarity', () => {
         const nfts: NftInit[] = JSON.parse(data);
 
         // console.log(nfts[0]);
-        const { nftsWithRarityAndRank, collectionTraits } = addAllNftsRarity(nfts);
+        const { nftsWithRarityAndRank, collectionTraits } = getAllNftsRarity(nfts);
 
         let minRarityScore = Infinity;
 

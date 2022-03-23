@@ -1,10 +1,10 @@
 import fs from 'fs';
-import { addAllNftsRarity, NftInit } from '../src';
+import { getAllNftsRarity, NftInit } from '../src';
 
 const exampleCalculateRarityOfAllNfts = () => {
     const data = fs.readFileSync('../src/rarity/boredapeyachtclub.test.json', { encoding: 'utf8', flag: 'r' });
     const nfts: NftInit[] = JSON.parse(data);
-    const { nftsWithRarityAndRank } = addAllNftsRarity(nfts);
+    const { nftsWithRarityAndRank } = getAllNftsRarity(nfts);
 
     nftsWithRarityAndRank.sort((a, b) => a.rarityTraitSumRank - b.rarityTraitSumRank);
 
