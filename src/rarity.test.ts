@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { calculateRarity } from './rarity';
-import { NftInit, TraitPreDb } from './types';
+import { NftInit } from './types';
 
 describe('calculateRarity', () => {
     test('min rarity is close to 1', () => {
@@ -11,11 +11,9 @@ describe('calculateRarity', () => {
         const { nftsWithRarityAndRank, collectionTraits } = calculateRarity(nfts);
 
         let minRarityScore = Infinity;
-        let minTrait: TraitPreDb;
 
         Object.values(collectionTraits).forEach(traits => traits.forEach(trait => {
             if (minRarityScore > trait.rarityTraitSum) {
-                minTrait = trait;
                 minRarityScore = trait.rarityTraitSum;
             }
         }));
@@ -24,7 +22,6 @@ describe('calculateRarity', () => {
 
         expect(minRarityScore).toBeGreaterThan(0.99);
         expect(minRarityScore).toBeLessThan(1.01);
-        expect(minTrait!.rarityTraitSum).toEqual(1);
 
     });
 });
