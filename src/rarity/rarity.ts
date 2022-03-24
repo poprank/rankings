@@ -137,8 +137,10 @@ const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitP
             // Ignore all non trait count "meta" traits
             if (trait.category === 'Meta' && trait.typeValue !== TRAIT_COUNT)
                 return;
+            if (minNonWeightComponent > calculateBaseTraitScore(trait.traitCount, collectionSize, traitTypeArray.length)) {
 
-            minNonWeightComponent = Math.min(minNonWeightComponent, calculateBaseTraitScore(trait.traitCount, collectionSize, traitTypeArray.length));
+                minNonWeightComponent = Math.min(minNonWeightComponent, calculateBaseTraitScore(trait.traitCount, collectionSize, traitTypeArray.length));
+            }
         });
     });
 
@@ -195,18 +197,28 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
             // The trait is either the nft's trait w/ this type, or this type's "none"
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const trait = nft.traits.find(t => t.typeValue === traitType) ?? traitValuesOfThisType.find(t => t.category === 'None')!;
+            const { value, typeValue } = trait;
+            const currTraitValueCount = traitValuesOfThisType.find(t => t.value === value)!.traitCount;
+
+            const pushRatedTraitToCollectionTraits = (rarity: number, count: number) => {
+                if (!collectionTraits[typeValue])
+                    collectionTraits[typeValue] = [];
+
+                if (!collectionTraits[typeValue].find(t => t.value === value))
+                    collectionTraits[typeValue].push(({ ...trait, traitCount: count, rarityTraitSum: rarity }));
+
+            };
 
             // For all non trait-count meta traits, don't calculate the rarity. If it's not none though, still
             // add it to the end traits array
             if (traitValuesOfThisType.find(t => t.category === 'Meta' && t.typeValue !== TRAIT_COUNT)) {
-                if (trait.category !== 'None')
+                if (trait.category !== 'None') {
+                    pushRatedTraitToCollectionTraits(0, currTraitValueCount);
                     nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: 0 });
+                }
                 return;
 
             }
-
-            const { value, typeValue } = trait;
-            const currTraitValueCount = traitValuesOfThisType.find(t => t.value === value)!.traitCount;
 
             const collectionTraitValueCountPairs = collectionTraitsNoRarity[typeValue];
 
@@ -214,15 +226,14 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
             const currTraitRarity = calculateTraitScore(
                 currTraitValueCount, nfts.length, traitTypeCount, weight);
 
-            if (!collectionTraits[typeValue])
-                collectionTraits[typeValue] = [];
-
-            if (!collectionTraits[typeValue].find(t => t.value === value))
-                collectionTraits[typeValue].push(({ ...trait, traitCount: currTraitValueCount, rarityTraitSum: currTraitRarity }));
-
             rarityTraitSum += currTraitRarity;
 
-            nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: currTraitRarity });
+            // Push this trait to the collection-wide object if it's not there
+            pushRatedTraitToCollectionTraits(currTraitRarity, currTraitValueCount);
+
+            // Don't add "None" traits to the final array, they're implicit
+            if (trait.category !== 'None')
+                nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: currTraitRarity });
         },
         );
 
