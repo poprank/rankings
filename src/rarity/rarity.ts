@@ -86,7 +86,7 @@ export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMet
     // Initialize meta traits with the "Trait Count" trait
     const metaTraits: TraitBase[] = [{
         typeValue: TRAIT_COUNT,
-        value: `${nftTraits.filter(t => t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length}`,
+        value: `${nftTraits.filter(t => t.category !== 'None').length}`,
         category: 'Meta',
         displayType: null,
     }];
@@ -177,7 +177,7 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
         if (traitCountTrait) {
             numTraits = +traitCountTrait.value;
         } else {
-            numTraits = nft.traits.filter(t => t.value.toLowerCase() !== NONE_TRAIT.toLowerCase()).length;
+            numTraits = nft.traits.filter(t => t.category !== 'None').length;
         }
         maxTraitsNum = Math.max(maxTraitsNum, numTraits);
     });
