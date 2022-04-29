@@ -6,6 +6,12 @@ For a more hands-on example which involves pulling NFTs from OpenSea via their A
 
 Please join us in our [Discord](https://discord.com/invite/9R5RzdUbXb) too, we'd love to chat with you
 
+Install via npm / yarn:
+
+```
+yarn add @poprank/rankings
+```
+
 ## Example
 
 In order to run the example, you need to have Node / NPM installed. To run a typescript file, we suggest installing `npx` such that you can run `npx ts-node <filename>.ts`.
