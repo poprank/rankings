@@ -17,6 +17,7 @@
   ],
   "types": "lib/index.d.ts",
   "dependencies": {
+    "@types/bn.js": "^5.1.0",
     "keccak256": "^1.0.6"
   },
   "devDependencies": {
