@@ -1,6 +1,6 @@
 {
   "name": "@poprank/rankings",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "PopRank's NFT rarity and aesthetic ranking logic",
   "publishConfig": {
     "access": "public",
@@ -16,7 +16,9 @@
     "lib"
   ],
   "types": "lib/index.d.ts",
-  "dependencies": {},
+  "dependencies": {
+    "keccak256": "^1.0.6"
+  },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.13.0",

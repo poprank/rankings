@@ -1,5 +1,5 @@
 import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from '../types';
-import { collectionNameMetaFunctionPairs, getNftTraitsMatches, NONE_TRAIT, TRAIT_COUNT } from './rarity.meta';
+import { collectionNameMetaFunctionPairs, ensCollectionSizes, EnsCollectionSlug, ensCollectionSlugs, getNftTraitsMatches, ID_TRAIT_TYPE, NONE_TRAIT, stringToKeccak256DecimalId, TRAIT_COUNT } from './rarity.meta';
 
 /**
  * Gets the component of the trait score that isn't the weight.
@@ -154,9 +154,31 @@ const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitP
  * @returns Nfts with their rank and with rated traits, and the all-up
  */
 export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitPreDb[]>; } => {
-
+    const collection = nfts[0].collection;
     // Add all the base traits to the traits we'll add to the NFT, and calculate all "matches"
     nfts.forEach(nft => {
+        if (ensCollectionSlugs.includes(collection as EnsCollectionSlug)) {
+            const max = ensCollectionSizes[collection as EnsCollectionSlug];
+            const digits = max.toString().length - 1;
+            // Reverse engineer the number value of the ENS given its name or tokenID
+            let i = 0;
+            if (nft.name.includes('eth')) {
+                i = +nft.name.replace('.eth', '');
+            } else {
+                for (i = 0; i < 10000; i++) {
+                    const id = stringToKeccak256DecimalId(i.toString(), digits);
+
+                    // Find the initial integer ID
+                    if (id === nft.id) break;
+                }
+            }
+            nft.traits.push({
+                value: i.toString(),
+                category: 'Traits',
+                typeValue: ID_TRAIT_TYPE,
+                displayType: 'number',
+            });
+        }
         nft.traits.push(...getMetaTraits(nft.traits, nft.collection, true));
     });
 
@@ -236,6 +258,11 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
                 nftTraitsWithRarity.push({ ...trait, traitCount: 1, rarityTraitSum: currTraitRarity });
         },
         );
+
+        // Collections for which rarity doesn't make sense
+        if (ensCollectionSlugs.includes(collection as EnsCollectionSlug)) {
+            rarityTraitSum = 0;
+        }
 
         nftsWithRarity.push({ ...nft, traits: nftTraitsWithRarity, rarityTraitSum: +rarityTraitSum.toFixed(3) });
     });

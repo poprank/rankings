@@ -1,7 +1,214 @@
+import keccak256 from 'keccak256';
 import { TraitBase, TraitCategory } from '../types';
 
 export const TRAIT_COUNT = 'Trait Count';
+export const ID_TRAIT_TYPE = 'ID';
 export const NONE_TRAIT = 'None';
+
+export const ensCollectionSlugs = ['ens', '999club'] as const;
+export type EnsCollectionSlug = typeof ensCollectionSlugs[number];
+export const ensCollectionSizes: Record<EnsCollectionSlug, number> = {
+    'ens': 10_000,
+    '999club': 1_000,
+};
+
+export const DAYS_IN_MONTH: { [k: number]: number; } = {
+    1: 31,
+    2: 29, // 28 in a common year and 29 in a leap year and we're only concerned with max days here
+    3: 31,
+    4: 30,
+    5: 31,
+    6: 30,
+    7: 31,
+    8: 31,
+    9: 30,
+    10: 31,
+    11: 30,
+    12: 31,
+};
+
+function hexToDec(s: string) {
+    let i, j, carry;
+    const digits = [0];
+    for (i = 0; i < s.length; i += 1) {
+        carry = parseInt(s.charAt(i), 16);
+        for (j = 0; j < digits.length; j += 1) {
+            digits[j] = digits[j] * 16 + carry;
+            carry = digits[j] / 10 | 0;
+            digits[j] %= 10;
+        }
+        while (carry > 0) {
+            digits.push(carry % 10);
+            carry = carry / 10 | 0;
+        }
+    }
+    return digits.reverse().join('');
+}
+
+export const stringToKeccak256DecimalId = (s: string, digits: number) =>
+    hexToDec(keccak256(`0000${s}`.slice(-digits)).toString('hex'));
+
+const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection: EnsCollectionSlug) => {
+    const max = ensCollectionSizes[collection as EnsCollectionSlug];
+    const digits = max.toString().length - 1;
+
+    const trait = nftTraits.find(t => t.displayType === 'number' && t.typeValue === ID_TRAIT_TYPE);
+    if (!trait)
+        throw new Error(`This trait needs a trait with a displayType of 'number' and a typeValue of ${ID_TRAIT_TYPE}`);
+
+    const i = +trait.value;
+    const stringified = `000${i}`.slice(-digits);
+
+    // Palindrome trait
+    let isPalindrome = true;
+    if (digits === 4) {
+        let a = 0;
+        let b = stringified.length - 1;
+        while (a < b) {
+            if (stringified[a] !== stringified[b]) {
+                isPalindrome = false;
+                break;
+            }
+            a++;
+            b--;
+        }
+    } else if (digits === 3) {
+        isPalindrome = stringified[0] === stringified[2];
+    }
+
+    if (isPalindrome) {
+        outTraits.push({
+            value: 'Palindrome',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Prime trait
+    let isPrime = (['0', '2', '4', '5', '6', '8'].includes(stringified[digits - 1]) && i !== 2 && i !== 5) ? false : true;
+    let c = 2;
+    while (c < Math.ceil(Math.sqrt(i)) && isPrime) {
+        if (i % c === 0) {
+            isPrime = false;
+        }
+
+        c++;
+    }
+
+    if (isPrime) {
+        outTraits.push({
+            value: 'Prime',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Fibonacci trait
+    const isFibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765].includes(i);
+    if (isFibonacci) {
+        outTraits.push({
+            value: 'Fibonacci',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // ABAB trait
+    const isABAB = stringified.slice(0, 2) === stringified.slice(2);
+    if (isABAB) {
+        outTraits.push({
+            value: 'ABAB Repeat',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Double (0331, 0013, 3122, etc) trait
+    let isDouble = false;
+    stringified.split('').forEach((char, index) => {
+        if (!index) return;
+        if (stringified[index - 1] === char) isDouble = true;
+    });
+    if (isDouble) {
+        outTraits.push({
+            value: 'Double',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Double (0331, 0013, 3122, etc) trait
+    const isDoublePair = stringified[0] === stringified[1] && stringified[2] === stringified[3];
+    if (isDoublePair) {
+        outTraits.push({
+            value: 'Double Pair',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Birthday trait
+    const day = +stringified.slice(0, 2);
+    const month = +stringified.slice(2, 4);
+    const isBirthday = month >= 1 && month <= 12 && day >= 1 && day <= DAYS_IN_MONTH[month];
+    if (isBirthday) {
+        outTraits.push({
+            value: 'Birthday',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Birthday (US) trait
+    const usMonth = +stringified.slice(0, 2);
+    const usDay = +stringified.slice(2, 4);
+    const isUSBirthday = usMonth >= 1 && usMonth <= 12 && usDay >= 1 && usDay <= DAYS_IN_MONTH[usMonth];
+    if (isUSBirthday) {
+        outTraits.push({
+            value: 'Birthday (US)',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Triple Digits
+    let isTriple = false;
+    for (let j = 0; j < stringified.length - 3; j++) {
+        if (['000', '111', '222', '333', '444', '555', '666', '777', '888', '999'].includes(stringified.slice(j, j + 3)))
+            isTriple = true;
+    }
+    if (isTriple) {
+        outTraits.push({
+            value: 'Triple',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Triple Digits
+    let isQuadruple = false;
+    for (let j = 0; j < stringified.length - 4; j++) {
+        if (['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999'].includes(stringified.slice(j, j + 4)))
+            isQuadruple = true;
+    }
+    if (isQuadruple) {
+        outTraits.push({
+            value: 'Quadruple',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+};
 
 /**
  * All the manual functions we use to add special "meta" traits to collections.
@@ -68,7 +275,12 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
             });
         }
     },
-}];
+}, {
+    'ens': (nftTraits: TraitBase[], outTraits: TraitBase[]) => ensMetaFunc(nftTraits, outTraits, 'ens'),
+}, {
+    '999club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => ensMetaFunc(nftTraits, outTraits, '999club'),
+},
+];
 
 /**
  * Get the "match" traits for a collection. Has some collection-specific logic to add desired
@@ -80,23 +292,23 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
 export const getNftTraitsMatches = (nftTraits: TraitBase[], collection: string): Record<string, number> => {
     const traitValueMatches: Record<string, number> = {};
     nftTraits.forEach((n: TraitBase) => {
-        let scrubbedValue = n.value;
+        let scrubbedValue = `${n.value}`;
 
         // Ignore all "None" traits
         if (scrubbedValue === NONE_TRAIT) return;
 
         // Remove the first word from the trait, as it's always "M1/M2/M3"
         if (collection === 'mutant-ape-yacht-club')
-            scrubbedValue = n.value.split(' ').slice(1).join(' ');
+            scrubbedValue = scrubbedValue.split(' ').slice(1).join(' ');
 
         // Attempt to match "Skin - Blue" and "Shirt - Light Blue"
         if (collection === 'doodles-official') {
-            scrubbedValue = n.value.toLowerCase().replace('light ', '');
+            scrubbedValue = scrubbedValue.toLowerCase().replace('light ', '');
         }
 
         // Grab the first word of the trait type. This is to try match "Blue Shirt" and "Blue Hat".
         // Will likely make this more intelligent in the future, this is just a simple implementation
-        scrubbedValue = n.value.split(' ')[0].toLowerCase();
+        scrubbedValue = scrubbedValue.split(' ')[0].toLowerCase();
 
         if (!traitValueMatches[scrubbedValue]) {
             traitValueMatches[scrubbedValue] = 0;
