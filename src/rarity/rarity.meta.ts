@@ -75,6 +75,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection:
     } else if (digits === 3) {
         isPalindrome = stringified[0] === stringified[2];
     }
+
     if (isPalindrome) {
         outTraits.push({
             value: 'Palindrome',
@@ -172,6 +173,36 @@ const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection:
     if (isUSBirthday) {
         outTraits.push({
             value: 'Birthday (US)',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Triple Digits
+    let isTriple = false;
+    for (let j = 0; j < stringified.length - 3; j++) {
+        if (['000', '111', '222', '333', '444', '555', '666', '777', '888', '999'].includes(stringified.slice(j, j + 3)))
+            isTriple = true;
+    }
+    if (isTriple) {
+        outTraits.push({
+            value: 'Triple',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Triple Digits
+    let isQuadruple = false;
+    for (let j = 0; j < stringified.length - 4; j++) {
+        if (['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999'].includes(stringified.slice(j, j + 4)))
+            isQuadruple = true;
+    }
+    if (isQuadruple) {
+        outTraits.push({
+            value: 'Quadruple',
             category: 'Meta',
             typeValue: 'Special',
             displayType: null,
