@@ -48,9 +48,10 @@ function hexToDec(s: string) {
 export const stringToKeccak256DecimalId = (s: string, digits: number) =>
     hexToDec(keccak256(`0000${s}`.slice(-digits)).toString('hex'));
 
-const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection: EnsCollectionSlug) => {
+const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     const max = ensCollectionSizes[collection as EnsCollectionSlug];
     const digits = max.toString().length - 1;
+    const outTraits: TraitBase[] = [];
 
     const trait = nftTraits.find(t => t.displayType === 'number' && t.typeValue === ID_TRAIT_TYPE);
     if (!trait)
@@ -181,7 +182,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection:
 
     // Triple Digits
     let isTriple = false;
-    for (let j = 0; j < stringified.length - 3; j++) {
+    for (let j = 0; j <= stringified.length - 3; j++) {
         if (['000', '111', '222', '333', '444', '555', '666', '777', '888', '999'].includes(stringified.slice(j, j + 3)))
             isTriple = true;
     }
@@ -196,7 +197,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection:
 
     // Triple Digits
     let isQuadruple = false;
-    for (let j = 0; j < stringified.length - 4; j++) {
+    for (let j = 0; j <= stringified.length - 4; j++) {
         if (['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999'].includes(stringified.slice(j, j + 4)))
             isQuadruple = true;
     }
@@ -208,6 +209,8 @@ const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection:
             displayType: null,
         });
     }
+
+    return outTraits;
 };
 
 /**
@@ -215,8 +218,9 @@ const ensMetaFunc = (nftTraits: TraitBase[], outTraits: TraitBase[], collection:
  * These meta traits don't affect rarity at all; they just make for more meaningful
  * trait filters on the frontend.
  */
-export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBase[], outTraits: TraitBase[]) => void>[] = [{
-    'creatureworld': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
+export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBase[]) => TraitBase[]>[] = [{
+    'creatureworld': (nftTraits: TraitBase[]): TraitBase[] => {
+        const outTraits: TraitBase[] = [];
         const bg = nftTraits.find(t => t.typeValue === 'Background');
         const creature = nftTraits.find(t => t.typeValue === 'Creature');
         if (bg && creature) {
@@ -230,9 +234,11 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
                 });
             }
         }
+        return outTraits;
     },
 }, {
-    'deathbats-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
+    'deathbats-club': (nftTraits: TraitBase[]): TraitBase[] => {
+        const outTraits: TraitBase[] = [];
         nftTraits.forEach(trait => {
             const tType = trait.typeValue;
             if (['Brooks Wackerman', 'Johnny Christ', 'M. Shadows', 'Synyster Gates', 'Zacky Vengence', 'Zacky Vengeance', 'Shadows'].includes(tType) && !Object.keys(outTraits).includes('1 of 1')) {
@@ -244,9 +250,11 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
                 });
             }
         });
+        return outTraits;
     },
 }, {
-    'mutant-ape-yacht-club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => {
+    'mutant-ape-yacht-club': (nftTraits: TraitBase[]): TraitBase[] => {
+        const outTraits: TraitBase[] = [];
         const firstTrait = nftTraits[0].value;
         const baseTrait = {
             typeValue: 'Mutant Type',
@@ -274,11 +282,12 @@ export const collectionNameMetaFunctionPairs: Record<string, (nftTraits: TraitBa
                 value: 'M3',
             });
         }
+        return outTraits;
     },
 }, {
-    'ens': (nftTraits: TraitBase[], outTraits: TraitBase[]) => ensMetaFunc(nftTraits, outTraits, 'ens'),
+    'ens': (nftTraits: TraitBase[]): TraitBase[] => ensMetaFunc(nftTraits, 'ens'),
 }, {
-    '999club': (nftTraits: TraitBase[], outTraits: TraitBase[]) => ensMetaFunc(nftTraits, outTraits, '999club'),
+    '999club': (nftTraits: TraitBase[]): TraitBase[] => ensMetaFunc(nftTraits, '999club'),
 },
 ];
 

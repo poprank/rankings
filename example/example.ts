@@ -3,8 +3,9 @@ import { getAllNftsRarity, NftInit } from '../src';
 
 const exampleCalculateRarityOfAllNfts = () => {
     const data = fs.readFileSync('ens.test.json', { encoding: 'utf8', flag: 'r' });
+    // const data = fs.readFileSync('../src/rarity/boredapeyachtclub.test.json', { encoding: 'utf8', flag: 'r' });
     const nfts: NftInit[] = JSON.parse(data);
-    const { nftsWithRarityAndRank } = getAllNftsRarity(nfts);
+    const { nftsWithRarityAndRank } = getAllNftsRarity(nfts.map(n => ({ ...n, traits: n.traits.filter(t => t.category !== 'Meta') })));
 
     nftsWithRarityAndRank.sort((a, b) => a.rarityTraitSumRank - b.rarityTraitSumRank);
 
