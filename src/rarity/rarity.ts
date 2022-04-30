@@ -250,8 +250,8 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
             pushRatedTraitToCollectionTraits(ratedTrait);
 
             // Don't add "None" traits to the final array, they're implicit
-            // if (trait.category !== 'None')
-            nftTraitsWithRarity.push(ratedTrait);
+            if (trait.category !== 'None')
+                nftTraitsWithRarity.push(ratedTrait);
         },
         );
 
