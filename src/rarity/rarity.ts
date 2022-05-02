@@ -1,5 +1,5 @@
 import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from '../types';
-import { collectionNameMetaFunctionPairs, ensCollectionSizes, EnsCollectionSlug, ensCollectionSlugs, getNftTraitsMatches, ID_TRAIT_TYPE, NONE_TRAIT, stringToKeccak256DecimalId, TRAIT_COUNT } from './rarity.meta';
+import { customMetaFunctions, ensCollectionSizes, EnsCollectionSlug, ensCollectionSlugs, getNftTraitsMatches, ID_TRAIT_TYPE, NONE_TRAIT, stringToKeccak256DecimalId, TRAIT_COUNT } from './rarity.meta';
 
 /**
  * Gets the component of the trait score that isn't the weight.
@@ -95,9 +95,8 @@ export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMet
     if (!addMeta) return metaTraits;
 
     // Call this collection's meta trait function, if it exists
-    const collectionMetaFunctionPair = collectionNameMetaFunctionPairs.find(
-        collectionFunctionPair => Object.keys(collectionFunctionPair)[0] === collection);
-    if (collectionMetaFunctionPair) metaTraits.push(...collectionMetaFunctionPair[collection](nftTraits));
+    const customMetaFunction = customMetaFunctions[collection];
+    if (customMetaFunction) metaTraits.push(...customMetaFunction(nftTraits));
 
     // Calculate our "Matches" meta trait
     const traitValueMatches = getNftTraitsMatches(nftTraits, collection);
