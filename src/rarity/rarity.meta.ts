@@ -127,7 +127,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     }
     if (isAlternating) {
         outTraits.push({
-            value: 'ABAB Repeat',
+            value: 'Alternating',
             category: 'Meta',
             typeValue: 'Special',
             displayType: null,
