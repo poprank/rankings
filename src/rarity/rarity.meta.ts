@@ -65,30 +65,17 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     const isEvenDigits = isEven(digits);
     const outTraits: TraitBase[] = [];
 
-    // Palindrome trait
+    // Palindrome (ABA, ABBA, ABABA, AABAA) trait
     let isPalindrome = true;
-    if (isEvenDigits) {
-        // Even - Check for ABBA
-        let a = 0;
-        let b = stringifiedId.length - 1;
-        while (a < b) {
-            if (stringifiedId[a] !== stringifiedId[b]) {
-                isPalindrome = false;
-                break;
-            }
-            a++;
-            b--;
+    let a = 0;
+    let b = stringifiedId.length - 1;
+    while (a < b) {
+        if (stringifiedId[a] !== stringifiedId[b]) {
+            isPalindrome = false;
+            break;
         }
-    } else {
-        // Odd - Check for ABA or ABABA
-        const evenIndexValue = stringifiedId[0];
-        const oddIndexValue = stringifiedId[1];
-        for (let i = 2; i < digits; i++) {
-            isPalindrome = isEven(i) ? evenIndexValue === stringifiedId[i] : oddIndexValue === stringifiedId[i];
-            if (!isPalindrome) {
-                break;
-            }
-        }
+        a++;
+        b--;
     }
     if (isPalindrome) {
         outTraits.push({
