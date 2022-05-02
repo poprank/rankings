@@ -28,7 +28,7 @@ export const DAYS_IN_MONTH: { [k: number]: number; } = {
     12: 31,
 };
 
-function hexToDec(s: string) {
+const hexToDec = (s: string) => {
     let i, j, carry;
     const digits = [0];
     for (i = 0; i < s.length; i += 1) {
@@ -44,7 +44,7 @@ function hexToDec(s: string) {
         }
     }
     return digits.reverse().join('');
-}
+};
 
 export const stringToKeccak256DecimalId = (s: string, digits: number) =>
     hexToDec(keccak256(`0000${s}`.slice(-digits)).toString('hex'));
