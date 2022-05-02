@@ -68,7 +68,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     // Palindrome trait
     let isPalindrome = true;
     if (isEvenDigits) {
-        // Even - Check for AABB
+        // Even - Check for ABBA
         let a = 0;
         let b = stringifiedId.length - 1;
         while (a < b) {
