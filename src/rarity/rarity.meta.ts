@@ -244,7 +244,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     }
 
     // Square number
-    const isSquare = Number.isInteger(Math.pow(id, 1 / 2));
+    const isSquare = id > 0 && Number.isInteger(Math.pow(id, 1 / 2));
     if (isSquare) {
         outTraits.push({
             value: 'Square (^2)',
@@ -255,7 +255,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     }
 
     // Cube number
-    const isCube = Number.isInteger(Math.pow(id, 1 / 3));
+    const isCube = id > 0 && Number.isInteger(Math.pow(id, 1 / 3));
     if (isCube) {
         outTraits.push({
             value: 'Cube (^3)',
