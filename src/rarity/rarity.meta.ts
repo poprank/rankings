@@ -10,7 +10,7 @@ export type EnsCollectionSlug = typeof ensCollectionSlugs[number];
 export const ensCollectionSizes: Record<EnsCollectionSlug, number> = {
     '999club': 1_000,
     'ens': 10_000,
-    '100kclub': 100_000
+    '100kclub': 100_000,
 };
 
 export const DAYS_IN_MONTH: { [k: number]: number; } = {
@@ -241,6 +241,41 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
                 displayType: null,
             });
         }
+    }
+
+    // Square number
+    const isSquare = Number.isInteger(Math.pow(id, 1 / 2));
+    if (isSquare) {
+        outTraits.push({
+            value: 'Square (^2)',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Cube number
+    const isCube = Number.isInteger(Math.pow(id, 1 / 3));
+    if (isCube) {
+        outTraits.push({
+            value: 'Cube (^3)',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Was the ENS registered before the punk mint date
+    // In future will attempt to look at first mint date instead
+    const registrationDate = nftTraits.find(t => t.typeValue === 'Registration Date');
+    const isPrePunk = registrationDate && (new Date(+registrationDate.value * 1000)) < new Date('2017-06-23T00:00:00.000Z');
+    if (isPrePunk) {
+        outTraits.push({
+            value: 'Pre Punk',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
     }
 
     return outTraits;
