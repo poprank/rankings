@@ -89,7 +89,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     // Prime trait
     let isPrime = !(['0', '2', '4', '5', '6', '8'].includes(stringifiedId[digits - 1]) && id !== 2 && id !== 5);
     let c = 2;
-    while (c < Math.ceil(Math.sqrt(id)) && isPrime) {
+    while (c <= Math.ceil(Math.sqrt(id)) && isPrime) {
         if (id % c === 0) {
             isPrime = false;
         }
