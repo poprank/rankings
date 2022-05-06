@@ -227,7 +227,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
         }
     }
 
-    // Quintuple Digits
+    // Quintuple (33333, 44444, etc.) trait
     if (digits === 5) {
         let isQuintuple = false;
         if (['00000', '11111', '22222', '33333', '44444', '55555', '66666', '77777', '88888', '99999'].includes(stringifiedId)) {
@@ -241,6 +241,22 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
                 displayType: null,
             });
         }
+    }
+
+    // Hundred (x00), Thousand (x000), Ten Thousand (x0,000) trait
+    if (id % Math.pow(10, digits - 1) === 0) {
+        const values: Record<number, string> = {
+            3: 'Hundred',
+            4: 'Thousand',
+            5: 'Ten Thousand',
+        };
+
+        outTraits.push({
+            value: values[digits],
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
     }
 
     // Square number
