@@ -4,7 +4,9 @@ This package holds PopRank's NFT rankings logic. Curious as to how we calculate 
 
 For a more hands-on example which involves pulling NFTs from OpenSea via their API and then calculating their rarity, check out the example in our [@poprank/opensea package](https://www.npmjs.com/package/@poprank/opensea)
 
-Please join us in our [Discord](https://discord.com/invite/9R5RzdUbXb) too, we'd love to chat with you
+Please join us in our [Discord](https://discord.com/invite/9R5RzdUbXb) too, we'd love to chat with you.
+
+[Rarity Punks](https://raritypunks.io/) outlined the base of our "Trait Sum" [rarity calculation](https://storage.googleapis.com/raritypunks.appspot.com/assets/rarity.pdf), we're thankful for their stellar work and recommend you check them out!
 
 Install via npm / yarn:
 

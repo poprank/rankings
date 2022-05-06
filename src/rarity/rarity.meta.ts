@@ -10,7 +10,7 @@ export type EnsCollectionSlug = typeof ensCollectionSlugs[number];
 export const ensCollectionSizes: Record<EnsCollectionSlug, number> = {
     '999club': 1_000,
     'ens': 10_000,
-    '100kclub': 100_000
+    '100kclub': 100_000,
 };
 
 export const DAYS_IN_MONTH: { [k: number]: number; } = {
@@ -89,7 +89,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     // Prime trait
     let isPrime = !(['0', '2', '4', '5', '6', '8'].includes(stringifiedId[digits - 1]) && id !== 2 && id !== 5);
     let c = 2;
-    while (c < Math.ceil(Math.sqrt(id)) && isPrime) {
+    while (c <= Math.ceil(Math.sqrt(id)) && isPrime) {
         if (id % c === 0) {
             isPrime = false;
         }
@@ -275,6 +275,41 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
                 });
             }
             break;
+    }
+
+    // Square number
+    const isSquare = id > 0 && Number.isInteger(Math.sqrt(id));
+    if (isSquare) {
+        outTraits.push({
+            value: 'Square (^2)',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Cube number
+    const isCube = id > 0 && Number.isInteger(Math.cbrt(id));
+    if (isCube) {
+        outTraits.push({
+            value: 'Cube (^3)',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
+    }
+
+    // Was the ENS registered before the punk mint date
+    // In future will attempt to look at first mint date instead
+    const registrationDate = nftTraits.find(t => t.typeValue === 'Registration Date');
+    const isPrePunk = registrationDate && (new Date(+registrationDate.value * 1000)) < new Date('2017-06-23T00:00:00.000Z');
+    if (isPrePunk) {
+        outTraits.push({
+            value: 'Pre Punk',
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
     }
 
     return outTraits;
