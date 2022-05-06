@@ -244,37 +244,19 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     }
 
     // Hundred (x00), Thousand (x000), Ten Thousand (x0,000) trait
-    switch (digits) {
-        case 3:
-            if (id % 100 === 0) {
-                outTraits.push({
-                    value: 'Hundred',
-                    category: 'Meta',
-                    typeValue: 'Special',
-                    displayType: null,
-                });
-            }
-            break;
-        case 4:
-            if (id % 1000 === 0) {
-                outTraits.push({
-                    value: 'Thousand',
-                    category: 'Meta',
-                    typeValue: 'Special',
-                    displayType: null,
-                });
-            }
-            break;
-        case 5:
-            if (id % 10_000 === 0) {
-                outTraits.push({
-                    value: 'Ten Thousand',
-                    category: 'Meta',
-                    typeValue: 'Special',
-                    displayType: null,
-                });
-            }
-            break;
+    if (id % Math.pow(10, digits - 1) === 0) {
+        const values: Record<number, string> = {
+            3: 'Hundred',
+            4: 'Thousand',
+            5: 'Ten Thousand',
+        };
+
+        outTraits.push({
+            value: values[digits],
+            category: 'Meta',
+            typeValue: 'Special',
+            displayType: null,
+        });
     }
 
     // Square number
