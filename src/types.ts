@@ -24,7 +24,10 @@ export interface NftInit {
     id: string;
     address: string;
     imageUrl: string;
-    metadataUrl: string;
+    /**
+    * a `null` metadataUrl indicates that the data is on-chain
+    */
+    metadataUrl: string | null;
     rating: number;
     timesSeen: number;
     timesWon: number;
