@@ -65,6 +65,12 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     const isEvenDigits = isEven(digits);
     const outTraits: TraitBase[] = [];
 
+    const baseOutTrait: Omit<TraitBase, 'value'> = {
+        category: 'Meta',
+        typeValue: 'Special',
+        displayType: null,
+    };
+
     // Palindrome (ABA, ABBA, ABABA, AABAA) trait
     let isPalindrome = true;
     let a = 0;
@@ -78,12 +84,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
         b--;
     }
     if (isPalindrome) {
-        outTraits.push({
-            value: 'Palindrome',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Palindrome' });
     }
 
     // Prime trait
@@ -97,23 +98,13 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
         c++;
     }
     if (isPrime) {
-        outTraits.push({
-            value: 'Prime',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Prime' });
     }
 
     // Fibonacci trait
     const isFibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025].includes(id);
     if (isFibonacci) {
-        outTraits.push({
-            value: 'Fibonacci',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Fibonacci' });
     }
 
     // Alternating trait
@@ -126,12 +117,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
         isAlternating = isPalindrome && stringifiedId[0] !== stringifiedId[1];
     }
     if (isAlternating) {
-        outTraits.push({
-            value: 'Alternating',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Alternating' });
     }
 
     // Double (0331, 0013, 3122, etc) trait
@@ -141,12 +127,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
         if (stringifiedId[index - 1] === char) isDouble = true;
     });
     if (isDouble) {
-        outTraits.push({
-            value: 'Double',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Double' });
     }
 
     // Double (3311, 03311, etc) Pair trait
@@ -156,43 +137,35 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
             isDoublePair = stringifiedId[1] === stringifiedId[2] && stringifiedId[3] === stringifiedId[4];
         }
         if (isDoublePair) {
-            outTraits.push({
-                value: 'Double Pair',
-                category: 'Meta',
-                typeValue: 'Special',
-                displayType: null,
-            });
+            outTraits.push({ ...baseOutTrait, value: 'Double Pair' });
         }
     }
 
     // Birthday trait
+    let isBirthday = false;
     if (digits === 4) {
         const day = +stringifiedId.slice(0, 2);
         const month = +stringifiedId.slice(2, 4);
-        const isBirthday = month >= 1 && month <= 12 && day >= 1 && day <= DAYS_IN_MONTH[month];
+        isBirthday = month >= 1 && month <= 12 && day >= 1 && day <= DAYS_IN_MONTH[month];
         if (isBirthday) {
-            outTraits.push({
-                value: 'Birthday',
-                category: 'Meta',
-                typeValue: 'Special',
-                displayType: null,
-            });
+            outTraits.push({ ...baseOutTrait, value: 'Birthday' });
         }
     }
 
     // Birthday (US) trait
+    let isUSBirthday = false;
     if (digits === 4) {
         const usMonth = +stringifiedId.slice(0, 2);
         const usDay = +stringifiedId.slice(2, 4);
-        const isUSBirthday = usMonth >= 1 && usMonth <= 12 && usDay >= 1 && usDay <= DAYS_IN_MONTH[usMonth];
+        isUSBirthday = usMonth >= 1 && usMonth <= 12 && usDay >= 1 && usDay <= DAYS_IN_MONTH[usMonth];
         if (isUSBirthday) {
-            outTraits.push({
-                value: 'Birthday (US)',
-                category: 'Meta',
-                typeValue: 'Special',
-                displayType: null,
-            });
+            outTraits.push({ ...baseOutTrait, value: 'Birthday (US)' });
         }
+    }
+
+    // Birthday (Global) trait
+    if (isBirthday && isUSBirthday) {
+        outTraits.push({ ...baseOutTrait, value: 'Birthday (Global)' });
     }
 
     // Triple (333, 3331, 33311, etc) trait
@@ -202,12 +175,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
             isTriple = true;
     }
     if (isTriple) {
-        outTraits.push({
-            value: 'Triple',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Triple' });
     }
 
     // Quadruple (3333, 33331, etc) trait
@@ -218,12 +186,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
                 isQuadruple = true;
         }
         if (isQuadruple) {
-            outTraits.push({
-                value: 'Quadruple',
-                category: 'Meta',
-                typeValue: 'Special',
-                displayType: null,
-            });
+            outTraits.push({ ...baseOutTrait, value: 'Quadruple' });
         }
     }
 
@@ -234,12 +197,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
             isQuintuple = true;
         }
         if (isQuintuple) {
-            outTraits.push({
-                value: 'Quintuple',
-                category: 'Meta',
-                typeValue: 'Special',
-                displayType: null,
-            });
+            outTraits.push({ ...baseOutTrait, value: 'Quintuple' });
         }
     }
 
@@ -251,34 +209,19 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
             5: 'Ten Thousand',
         };
 
-        outTraits.push({
-            value: values[digits],
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: values[digits] });
     }
 
     // Square number
     const isSquare = id > 0 && Number.isInteger(Math.sqrt(id));
     if (isSquare) {
-        outTraits.push({
-            value: 'Square (^2)',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Square (^2)' });
     }
 
     // Cube number
     const isCube = id > 0 && Number.isInteger(Math.cbrt(id));
     if (isCube) {
-        outTraits.push({
-            value: 'Cube (^3)',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Cube (^3)' });
     }
 
     // Was the ENS registered before the punk mint date
@@ -286,12 +229,7 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     const registrationDate = nftTraits.find(t => t.typeValue === 'Registration Date');
     const isPrePunk = registrationDate && (new Date(+registrationDate.value * 1000)) < new Date('2017-06-23T00:00:00.000Z');
     if (isPrePunk) {
-        outTraits.push({
-            value: 'Pre Punk',
-            category: 'Meta',
-            typeValue: 'Special',
-            displayType: null,
-        });
+        outTraits.push({ ...baseOutTrait, value: 'Pre Punk' });
     }
 
     return outTraits;
