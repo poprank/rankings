@@ -1,4 +1,4 @@
-import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitPreDb } from '../types';
+import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitCategory, TraitPreDb } from '../types';
 import { customMetaFunctions, ensCollectionSizes, EnsCollectionSlug, ensCollectionSlugs, getNftTraitsMatches, ID_TRAIT_TYPE, NONE_TRAIT, stringToKeccak256DecimalId, TRAIT_COUNT } from './rarity.meta';
 
 /**
@@ -158,6 +158,7 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
     const collection = nfts[0].collection;
     // Add all the base traits to the traits we'll add to the NFT, and calculate all "matches"
     nfts.forEach(nft => {
+        let traits = nft.traits.slice();
         if (ensCollectionSlugs.includes(collection as EnsCollectionSlug)) {
             const max = ensCollectionSizes[collection as EnsCollectionSlug];
             const digits = max.toString().length - 1;
@@ -173,14 +174,23 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
                     if (id === nft.id) break;
                 }
             }
-            nft.traits.push({
+            traits.push({
                 value: i.toString(),
                 category: 'Traits',
                 typeValue: ID_TRAIT_TYPE,
                 displayType: 'number',
             });
         }
-        nft.traits.push(...getMetaTraits(nft.traits, nft.collection, true));
+
+        // Check if the collection has its own "None" trait. If it does, ensure we correctly set its
+        // category to "None". Naive check for now, make more intelligent in the future
+        const noneTraits = traits.filter(t => t.value.toLowerCase() === 'none');
+        if (noneTraits.length) {
+            traits = [...traits.filter(t => t.value.toLowerCase() !== 'none'), ...noneTraits.map(t => ({ ...t, category: 'None' as TraitCategory }))];
+        }
+
+        traits.push(...getMetaTraits(nft.traits, nft.collection, true));
+        nft.traits = traits;
     });
 
     const nftsWithRarity: NftWithRatedTraits[] = [];
