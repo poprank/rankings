@@ -28,12 +28,12 @@ export const calculateTraitScore = (traitCount: number, collectionSize: number, 
  * @param trait The trait to push
  */
 const pushTraitToCollectionTraits = (collectionTraits: Record<string, TraitPreDb[]>, trait: TraitBase) => {
-    const { value, typeValue } = trait;
+    const { value, typeValue, category } = trait;
 
     if (!collectionTraits[typeValue])
         collectionTraits[typeValue] = [];
 
-    const alreadySeenTraitIndex = collectionTraits[typeValue].findIndex(t => t.value === value && t.typeValue === typeValue);
+    const alreadySeenTraitIndex = collectionTraits[typeValue].findIndex(t => t.value === value && t.typeValue === typeValue && t.category === category);
     const alreadySeenTrait = collectionTraits[typeValue][alreadySeenTraitIndex];
 
     if (alreadySeenTraitIndex === -1) {
