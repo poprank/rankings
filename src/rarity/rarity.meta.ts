@@ -306,6 +306,26 @@ export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => Tra
     'ens': (nftTraits) => ensMetaFunc(nftTraits, 'ens'),
     '999club': (nftTraits) => ensMetaFunc(nftTraits, '999club'),
     '100kclub': (nftTraits) => ensMetaFunc(nftTraits, '100kclub'),
+    'goblintownwtf': (nftTraits) => {
+        const outTraits: TraitBase[] = [];
+        const lazerCount = nftTraits.filter(t =>
+            t.typeValue === 'MUNCHYHOLE' && t.value === 'LAZERBARRF' ||
+            t.typeValue === 'stankfinder' && t.value === 'LAAAYZERSNOT' ||
+            t.typeValue === 'Eye on dat side' && t.value === 'LAZZARZZZZ' ||
+            t.typeValue === 'Eyz on dis side' && t.value === 'LAZERRR' ||
+            t.typeValue === 'Eers' && t.value === 'LAAAAAZZER EERS',
+        ).length;
+
+        if (lazerCount) {
+            outTraits.push({
+                typeValue: '# LAZZZARRRRRSS',
+                value: `${lazerCount}`,
+                category: 'Meta' as TraitCategory,
+                displayType: null,
+            });
+        }
+        return outTraits;
+    },
 };
 
 /**
