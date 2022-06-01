@@ -318,7 +318,7 @@ export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => Tra
 
         if (lazerCount) {
             outTraits.push({
-                typeValue: '# LAZZZARRRRRSS',
+                typeValue: '# LAZERS',
                 value: `${lazerCount}`,
                 category: 'Meta' as TraitCategory,
                 displayType: null,
