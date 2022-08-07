@@ -1,11 +1,11 @@
+import { NftWithInitialTraits } from '@poprank/sdk';
 import fs from 'fs';
-import { NftInit } from '../types';
 import { getAllNftsRarity } from './rarity';
 import { TRAIT_COUNT } from './rarity.meta';
 
 describe('addAllNftsRarity', () => {
     const data = fs.readFileSync('./src/rarity/boredapeyachtclub.test.json', { encoding: 'utf8', flag: 'r' });
-    const nfts: NftInit[] = JSON.parse(data);
+    const nfts: NftWithInitialTraits[] = JSON.parse(data);
 
     // console.log(nfts[0]);
     const { nftsWithRarityAndRank, collectionTraits } = getAllNftsRarity(nfts);
