@@ -1,5 +1,5 @@
+import { TraitCategory, TraitInit } from '@poprank/sdk';
 import keccak256 from 'keccak256';
-import { TraitBase, TraitCategory } from '../types';
 
 export const TRAIT_COUNT = 'Trait Count';
 export const ID_TRAIT_TYPE = 'ID';
@@ -51,7 +51,7 @@ export const stringToKeccak256DecimalId = (s: string, digits: number) =>
 
 const isEven = (x: number) => x % 2 === 0;
 
-const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
+const ensMetaFunc = (nftTraits: TraitInit[], collection: EnsCollectionSlug) => {
     // Early exit
     const trait = nftTraits.find(t => t.displayType === 'number' && t.typeValue === ID_TRAIT_TYPE);
     if (!trait)
@@ -63,9 +63,9 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
     const id = +trait.value;
     const stringifiedId = `000${id}`.slice(-digits);
     const isEvenDigits = isEven(digits);
-    const outTraits: TraitBase[] = [];
+    const outTraits: TraitInit[] = [];
 
-    const baseOutTrait: Omit<TraitBase, 'value'> = {
+    const baseOutTrait: Omit<TraitInit, 'value'> = {
         category: 'Meta',
         typeValue: 'Special',
         displayType: null,
@@ -240,9 +240,9 @@ const ensMetaFunc = (nftTraits: TraitBase[], collection: EnsCollectionSlug) => {
  * These meta traits don't affect rarity at all; they just make for more meaningful
  * trait filters on the frontend.
  */
-export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => TraitBase[]> = {
+export const customMetaFunctions: Record<string, (nftTraits: TraitInit[]) => TraitInit[]> = {
     'creatureworld': nftTraits => {
-        const outTraits: TraitBase[] = [];
+        const outTraits: TraitInit[] = [];
         const bg = nftTraits.find(t => t.typeValue === 'Background');
         const creature = nftTraits.find(t => t.typeValue === 'Creature');
         if (bg && creature) {
@@ -258,7 +258,7 @@ export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => Tra
         return outTraits;
     },
     'deathbats-club': nftTraits => {
-        const outTraits: TraitBase[] = [];
+        const outTraits: TraitInit[] = [];
         nftTraits.forEach(trait => {
             const tType = trait.typeValue;
             if (['Brooks Wackerman', 'Johnny Christ', 'M. Shadows', 'Synyster Gates', 'Zacky Vengence', 'Zacky Vengeance', 'Shadows'].includes(tType) && !Object.keys(outTraits).includes('1 of 1')) {
@@ -273,7 +273,7 @@ export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => Tra
         return outTraits;
     },
     'mutant-ape-yacht-club': nftTraits => {
-        const outTraits: TraitBase[] = [];
+        const outTraits: TraitInit[] = [];
         const firstTrait = nftTraits[0].value;
         const baseTrait = {
             typeValue: 'Mutant Type',
@@ -307,7 +307,7 @@ export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => Tra
     '999club': (nftTraits) => ensMetaFunc(nftTraits, '999club'),
     '100kclub': (nftTraits) => ensMetaFunc(nftTraits, '100kclub'),
     'goblintownwtf': (nftTraits) => {
-        const outTraits: TraitBase[] = [];
+        const outTraits: TraitInit[] = [];
         const lazerCount = nftTraits.filter(t =>
             t.typeValue === 'MUNCHYHOLE' && t.value === 'LAZERBARRF' ||
             t.typeValue === 'stankfinder' && t.value === 'LAAAYZERSNOT' ||
@@ -335,9 +335,9 @@ export const customMetaFunctions: Record<string, (nftTraits: TraitBase[]) => Tra
  * @param collection
  * @returns
  */
-export const getNftTraitsMatches = (nftTraits: TraitBase[], collection: string): Record<string, number> => {
+export const getNftTraitsMatches = (nftTraits: TraitInit[], collection: string): Record<string, number> => {
     const traitValueMatches: Record<string, number> = {};
-    nftTraits.forEach((n: TraitBase) => {
+    nftTraits.forEach((n: TraitInit) => {
         let scrubbedValue = `${n.value}`;
 
         // Ignore all "None" traits

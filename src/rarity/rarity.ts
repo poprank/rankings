@@ -1,4 +1,4 @@
-import { NftInit, NftWithRank, NftWithRatedTraits, TraitBase, TraitCategory, TraitPreDb } from '../types';
+import { NftWithInitialTraits, NftWithRank, NftWithRatedTraits, TraitBase, TraitCategory, TraitInit } from '@poprank/sdk';
 import { customMetaFunctions, ensCollectionSizes, EnsCollectionSlug, ensCollectionSlugs, getNftTraitsMatches, ID_TRAIT_TYPE, NONE_TRAIT, stringToKeccak256DecimalId, TRAIT_COUNT } from './rarity.meta';
 
 /**
@@ -27,7 +27,7 @@ export const calculateTraitScore = (traitCount: number, collectionSize: number, 
  * eg: `head:[{typeValue:'head',value:'crown'}...]
  * @param trait The trait to push
  */
-const pushTraitToCollectionTraits = (collectionTraits: Record<string, TraitPreDb[]>, trait: TraitBase) => {
+const pushTraitToCollectionTraits = (collectionTraits: Record<string, TraitBase[]>, trait: TraitInit) => {
     const { value, typeValue, category } = trait;
 
     if (!collectionTraits[typeValue])
@@ -49,8 +49,8 @@ const pushTraitToCollectionTraits = (collectionTraits: Record<string, TraitPreDb
  * @returns An object with `traitType: arrayOfTraitsOfThisType` key-value pairs, with each trait having the
  * correct `traitCount`.
  */
-const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]> => {
-    const collectionTraitsNoRarity: Record<string, TraitPreDb[]> = {};
+const getCollectionTraits = (nfts: NftWithInitialTraits[]): Record<string, TraitBase[]> => {
+    const collectionTraitsNoRarity: Record<string, TraitBase[]> = {};
     nfts.forEach(nft => {
         nft.traits.forEach(t => {
             pushTraitToCollectionTraits(collectionTraitsNoRarity, t);
@@ -82,9 +82,9 @@ const getCollectionTraits = (nfts: NftInit[]): Record<string, TraitPreDb[]> => {
  * @param addMeta whether to add all non Trait Count meta traits. Trait Count is always added
  * @returns
  */
-export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMeta?: boolean): TraitBase[] => {
+export const getMetaTraits = (nftTraits: TraitInit[], collection: string, addMeta?: boolean): TraitInit[] => {
     // Initialize meta traits with the "Trait Count" trait
-    const metaTraits: TraitBase[] = [{
+    const metaTraits: TraitInit[] = [{
         typeValue: TRAIT_COUNT,
         value: `${nftTraits.filter(t => t.category !== 'None').length}`,
         category: 'Meta',
@@ -127,7 +127,7 @@ export const getMetaTraits = (nftTraits: TraitBase[], collection: string, addMet
  * @param collectionTraits
  * @param collectionSize
  */
-const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitPreDb[]>, collectionSize: number) => {
+const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitBase[]>, collectionSize: number) => {
     let minNonWeightComponent = Infinity;
 
     Object.values(collectionTraits).forEach(traitTypeArray => {
@@ -154,7 +154,7 @@ const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitP
  * @param nfts Nfts with unranked, unrated traits
  * @returns Nfts with their rank and with rated traits, and the all-up
  */
-export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitPreDb[]>; } => {
+export const getAllNftsRarity = (nfts: NftWithInitialTraits[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitBase[]>; } => {
     const collection = nfts[0].collection;
     // Add all the base traits to the traits we'll add to the NFT, and calculate all "matches"
     nfts.forEach(nft => {
@@ -196,9 +196,9 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
     const nftsWithRarity: NftWithRatedTraits[] = [];
 
     const collectionTraitsNoRarity = getCollectionTraits(nfts);
-    const collectionTraits: Record<string, TraitPreDb[]> = {};
+    const collectionTraits: Record<string, TraitBase[]> = {};
 
-    const pushRatedTraitToCollectionTraits = (trait: TraitPreDb) => {
+    const pushRatedTraitToCollectionTraits = (trait: TraitBase) => {
         const { typeValue, value } = trait;
         if (!collectionTraits[typeValue])
             collectionTraits[typeValue] = [];
@@ -215,7 +215,7 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
     // rarity to our all up `collectionTraits` object.
     nfts.forEach(nft => {
         let rarityTraitSum = 0;
-        const nftTraitsWithRarity: TraitPreDb[] = [];
+        const nftTraitsWithRarity: TraitBase[] = [];
 
         // All the NFTs' traits, and the "None" traits
         const traitsToParse = nft.traits;
@@ -270,7 +270,12 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
         }
 
         nftTraitsWithRarity.sort((a, b) => b.rarityTraitSum - a.rarityTraitSum);
-        nftsWithRarity.push({ ...nft, traits: nftTraitsWithRarity, rarityTraitSum: +rarityTraitSum.toFixed(3) });
+        nftsWithRarity.push({
+            ...nft,
+            traits: nftTraitsWithRarity,
+            rarityTraitSum: +rarityTraitSum.toFixed(3),
+            rarityJaccard: 0,
+        });
     });
 
     // Get all the array of all the NFTs' rarities, which after sorting we can use to find an NFT's rank
@@ -285,6 +290,7 @@ export const getAllNftsRarity = (nfts: NftInit[]): { nftsWithRarityAndRank: NftW
         // Below will also handle the case where two NFTs have the same
         // rarity score
         rarityTraitSumRank: rarities.indexOf(n.rarityTraitSum) + 1,
+        rarityJaccardRank: 0,
     }));
 
     return { nftsWithRarityAndRank, collectionTraits };
