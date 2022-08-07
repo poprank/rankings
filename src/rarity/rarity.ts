@@ -1,4 +1,4 @@
-import { NftWithInitialTraits, NftWithRank, NftWithRatedTraits, TraitBase, TraitCategory, TraitInit } from '@poprank/sdk';
+import { NftWithInitialTraits, NftWithRatedTraits, TraitBase, TraitCategory, TraitInit } from '@poprank/sdk';
 import { customMetaFunctions, ensCollectionSizes, EnsCollectionSlug, ensCollectionSlugs, getNftTraitsMatches, ID_TRAIT_TYPE, NONE_TRAIT, stringToKeccak256DecimalId, TRAIT_COUNT } from './rarity.meta';
 
 /**
@@ -154,7 +154,7 @@ const calculateCollectionRarityWeight = (collectionTraits: Record<string, TraitB
  * @param nfts Nfts with unranked, unrated traits
  * @returns Nfts with their rank and with rated traits, and the all-up
  */
-export const getAllNftsRarity = (nfts: NftWithInitialTraits[]): { nftsWithRarityAndRank: NftWithRank[], collectionTraits: Record<string, TraitBase[]>; } => {
+export const getAllNftsRarity = (nfts: NftWithInitialTraits[]): { nftsWithRarityAndRank: NftWithRatedTraits[], collectionTraits: Record<string, TraitBase[]>; } => {
     const collection = nfts[0].collection;
     // Add all the base traits to the traits we'll add to the NFT, and calculate all "matches"
     nfts.forEach(nft => {
@@ -275,6 +275,9 @@ export const getAllNftsRarity = (nfts: NftWithInitialTraits[]): { nftsWithRarity
             traits: nftTraitsWithRarity,
             rarityTraitSum: +rarityTraitSum.toFixed(3),
             rarityJaccard: 0,
+            // We can only calculate the rank once all NFTs are rated
+            rarityJaccardRank: 0,
+            rarityTraitSumRank: 0,
         });
     });
 
@@ -285,7 +288,7 @@ export const getAllNftsRarity = (nfts: NftWithInitialTraits[]): { nftsWithRarity
     rarities.sort((a, b) => b - a);
 
     // Now that we've calculated the rarity of each NFT, we can calculate each NFT's rank
-    const nftsWithRarityAndRank: NftWithRank[] = nftsWithRarity.map(n => ({
+    const nftsWithRarityAndRank: NftWithRatedTraits[] = nftsWithRarity.map(n => ({
         ...n,
         // Below will also handle the case where two NFTs have the same
         // rarity score

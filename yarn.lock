@@ -558,10 +558,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@poprank/sdk@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@poprank/sdk/-/sdk-1.0.2.tgz#187506ec758f8a61c031742c866f2ae1930bb73d"
-  integrity sha512-v1TvPqGTs81bPHg+ZrneCOaGPksKCnLqD5NTlNuQ0SsLyF7SCRSi8e31eIUR9Lw19XKLX+0houaH6S7XW/WWuQ==
+"@poprank/sdk@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@poprank/sdk/-/sdk-1.0.4.tgz#9f4663157254acf6a5187623657703fedc7c6a63"
+  integrity sha512-PU9p4VbLfMLh8+4OBZySq5XE7d4mUuamRzQgi71Gtr9WcuVmoCfgOcA+6hxI9L0J4cQQk+FYCGzclGJkVrSPdg==
   dependencies:
     axios "^0.27.2"
 
